@@ -103,7 +103,7 @@
 
                     <group>
                         <group>
-                            <field name="name" readonly="1"/>
+                            <field name="name"/>
                             <field name="date" readonly="state != 'draft'"/>
                             <field name="journal_id" readonly="state != 'draft'"/>
                             <field name="cashbox_start_id" invisible="1"/>

@@ -1,5 +1,5 @@
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 
 class AccountBankStatementLine(models.Model):
@@ -109,7 +109,7 @@ class AccountBankStatement(models.Model):
     date = fields.Date(
         compute=False,
         default=fields.Date.context_today,
-        index=False,
+        index=True,
     )
     name = fields.Char(
         string='Name',
@@ -138,7 +138,13 @@ class AccountBankStatement(models.Model):
     ], default='draft',)
 
     difference = fields.Monetary(compute='compute_difference', store=True, help="Difference between the computed ending balance and the specified ending balance.")
+    first_line_index = fields.Char(
+        comodel_name='account.bank.statement.line',
+        compute=False, index=False,
+    )
 
+    def _compute_date_index(self):
+        return True
     def _check_cash_balance_end_real_same_as_computed(self):
         """ Check the balance_end_real (encoded manually by the user) is equals to the balance_end (computed by odoo).
             For a cash statement, if there is a difference, the different is set automatically to a profit/loss account.
@@ -199,11 +205,17 @@ class AccountBankStatement(models.Model):
         for record in self:
             record.state = 'posted'
 
-    # _sql_constraints = [
-    #     ('unique_statement_per_day_per_journal',
-    #      'UNIQUE(date, journal_id)',
-    #      'Vous ne pouvez pas créer plusieurs relevés bancaires pour le même journal et le même jour.')
-    # ]
+    def unlink(self):
+        for record in self:
+            if record.state not in ['draft']:
+                raise ValidationError(_("You can not delete a posted Statement !"))
+        return super().unlink()
+
+    _sql_constraints = [
+        ('unique_statement_per_day_per_journal',
+         'UNIQUE(date, journal_id)',
+         'Vous ne pouvez pas créer plusieurs relevés bancaires pour le même journal et le même jour.')
+    ]
 
     @api.depends('date', 'journal_id')
     def _get_previous_statement(self):
@@ -319,7 +331,7 @@ class AccountBankStatement(models.Model):
             'context': {'default_type': 'supplier_cash_out', 'default_statement_id': self.id},
         }
 
-    @api.depends('date', 'journal_id.name')
+    @api.depends('date', 'journal_id')
     def _compute_name(self):
         for record in self:
             record.name = ''
