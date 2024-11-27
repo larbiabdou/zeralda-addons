@@ -14,7 +14,7 @@ class AccountBankStatementLine(models.Model):
     ], string="Type", required=True, default='cash_in')
     employee_id = fields.Many2one(
         comodel_name='hr.employee',
-        string='Employee_id',
+        string='Employee',
         required=False)
     create_from_payment = fields.Boolean(
         string='create_from_payment',
