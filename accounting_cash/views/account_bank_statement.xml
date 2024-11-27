@@ -1,0 +1,188 @@
+<odoo>
+    <record id="view_account_bnk_stmt_cashbox" model="ir.ui.view">
+        <field name="name">account.bnk_stmt_cashbox.form</field>
+        <field name="model">account.bank.statement.cashbox</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <field name="start_bank_stmt_ids" invisible="1"/>
+                    <field name="end_bank_stmt_ids" invisible="1"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="cashbox_lines_ids" nolabel="1" context="{'default_currency_id': currency_id}">
+                        <tree editable="bottom">
+                            <field name="currency_id" invisible="1"/>
+                            <field name="number"/>
+                            <field name="coin_value" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="subtotal" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        </tree>
+                    </field>
+                    <div>
+                        <group>
+                            <group class="oe_subtotal_footer oe_right" cols="6">
+                                <field name="currency_id" invisible="1"/>
+                                <div class="o_td_label"></div>
+                                <field name="total" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            </group>
+                        </group>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_account_bnk_stmt_cashbox_footer" model="ir.ui.view">
+        <field name="name">account.bnk_stmt_cashbox.form</field>
+        <field name="model">account.bank.statement.cashbox</field>
+        <field name="priority">1000</field>
+        <field name="mode">primary</field>
+        <field name="inherit_id" ref="view_account_bnk_stmt_cashbox"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="after">
+                <footer>
+                    <button string="Confirm" class="btn-primary" special="save" data-hotkey="v"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z"/>
+                </footer>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_account_bnk_stmt_check" model="ir.ui.view">
+        <field name="name">account.bnk_stmt_check.form</field>
+        <field name="model">account.bank.statement.closebalance</field>
+        <field name="arch" type="xml">
+            <form>
+                <div>
+                    <p>The closing balance is different than the computed one!</p>
+                    <p>Confirming this will create automatically a journal entry with the difference in the profit/loss account set on the cash journal.</p>
+                    <footer>
+                        <button string="Confirm" name="validate" type="object" class="btn-primary" data-hotkey="q"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z"/>
+                    </footer>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_view_account_bnk_stmt_check" model="ir.actions.act_window">
+        <field name="name">Check Closing Balance</field>
+        <field name="res_model">account.bank.statement.closebalance</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_account_bnk_stmt_check"/>
+        <field name="target">new</field>
+    </record>
+    <record id="view_account_bank_statement_form" model="ir.ui.view">
+        <field name="name">account.bank.statement.form</field>
+        <field name="model">account.bank.statement</field>
+        <field name="arch" type="xml">
+            <form string="Bank Statement">
+                <header>
+                    <button name="open_cash_in_wizard" string="Cash In" type="object" class="oe_highlight" invisible="state != 'open'"/>
+                    <button name="open_cash_out_wizard" string="Cash Out" type="object" class="oe_highlight" invisible="state != 'open'"/>
+                    <button name="open_customer_cash_in_wizard" string="Customer Cash In" type="object" class="oe_highlight" invisible="state != 'open'"/>
+                    <button name="open_supplier_cash_out_wizard" string="Supplier Cash Out" type="object" class="oe_highlight" invisible="state != 'open'"/>
+                    <button name="action_open_bank_reconcile_widget" type="object" string="Reconcile" class="oe_highlight" invisible="state in ['open', 'confirm']"/>
+                    <button name="action_open" string="Open" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+
+                    <button name="action_post" string="Post" type="object" class="oe_highlight" invisible="state != 'open'"/>
+                    <button name="action_validate" string="Validate" type="object" class="oe_highlight" invisible="state != 'posted'"/>
+                    <button name="action_reopen" string="Reopen" type="object" class="oe_highlight" invisible="state != 'confirm'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="open_move_ids"
+                                type="object"
+                                class="oe_stat_button"
+                                invisible="move_ids == False"
+                                string="Moves"
+                                icon="fa-list"/>
+
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="date" readonly="state != 'draft'"/>
+                            <field name="journal_id" readonly="state != 'draft'"/>
+                            <field name="cashbox_start_id" invisible="1"/>
+                            <field name="cashbox_end_id" invisible="1"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="move_ids" invisible="1"/>
+                        </group>
+
+                        <group>
+                            <label for="balance_start"/>
+                            <div>
+                                <field name="balance_start" class="oe_inline" readonly="state != 'draft'"/>
+                                <button name="open_cashbox_id" invisible="state != 'draft'" string="&#8594; Count" type="object" class="oe_edit_only oe_link oe_inline" context="{'balance':'start'}"/>
+                            </div>
+                            <label for="balance_end_real"/>
+                            <div>
+                                <field name="balance_end_real" class="oe_inline" readonly="state == 'confirm'"/>
+                                <button name="open_cashbox_id" invisible="state == 'confirm'" string="&#8594; Count" type="object" class="oe_edit_only oe_link oe_inline" context="{'balance':'close'}"/>
+
+                            </div>
+                            <field name="balance_end" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Statement Lines">
+                            <field name="line_ids" widget="one2many_list">
+                                <tree string="Statement Lines" create="False">
+                                    <field name="name"/>
+                                    <field name="type"/>
+                                    <field name="partner_id"/>
+
+                                    <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <field name="is_reconciled" column_invisible="1"/>
+                                    <button name="button_undo_reconciliation" type="object"
+                                            invisible="is_reconciled == False"
+                                            string="Revert reconciliation" icon="fa-undo"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="view_bank_statement_tree_cash" model="ir.ui.view">
+        <field name="name">account.bank.statement.tree</field>
+        <field name="model">account.bank.statement</field>
+        <field name="arch" type="xml">
+            <tree decoration-danger="journal_id and not is_complete or not is_valid"
+                  decoration-muted="not journal_id"
+                  string="Statements">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="journal_id"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="balance_start"/>
+                <field name="balance_end_real"/>
+                <field name="balance_end" column_invisible="True"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="is_complete" column_invisible="True"/>
+                <field name="is_valid" column_invisible="True"/>
+            </tree>
+        </field>
+    </record>
+    <record id="account.action_view_bank_statement_tree" model="ir.actions.act_window">
+        <field name="view_mode">tree,form,pivot,graph</field>
+
+        <field name="view_id" ref="view_bank_statement_tree_cash"/>
+
+    </record>
+    <odoo>
+        <record id="view_bank_statement_tree_inherit" model="ir.ui.view">
+            <field name="name">account.bank.statement.tree.inherit</field>
+            <field name="model">account.bank.statement</field>
+            <field name="inherit_id" ref="account.view_bank_statement_tree"/> <!-- Remplacez 'module_name' par le module d'origine -->
+            <field name="arch" type="xml">
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="create">true</attribute>
+                </xpath>
+
+            </field>
+        </record>
+    </odoo>
+</odoo>

@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_bank_statement_line_wizard,access_bank_statement_line_wizard,model_bank_statement_line_wizard,base.group_user,1,1,1,0
+access_bank_statement_cashbox_user,account.bank.statement.cashboxuser,model_account_bank_statement_cashbox,base.group_user,1,1,1,0
+access_account_cashbox_line_user,account.account.cashbox.lineuser,model_account_cashbox_line,base.group_user,1,1,1,0
+access_bank_statement_closebalance_user,account.bank.statement.closebalanceuser,model_account_bank_statement_closebalance,base.group_user,1,1,1,0
+
+

@@ -1,0 +1,6 @@
+<odoo>
+    <menuitem id="menu_cash_root" name="Cash" sequence="10">
+        <!-- This Menu Item Must have a parent -->
+        <menuitem id="menu_cash_dashboard" name="dashboard" action="open_account_journal_dashboard_kanban"/>
+    </menuitem>
+</odoo>
