@@ -11,7 +11,7 @@ class AccountPayment(models.Model):
 
     def action_post(self):
         if self.journal_id.type == 'cash' and not self.create_from_statement:
-            statement_id = self.env['account.bank.statement'].search([('date', '=', self.date), ('state', '=', 'posted'), ('journal_id', '=', self.journal_id.id)])
+            statement_id = self.env['account.bank.statement'].search([('date', '=', self.date), ('state', '=', 'open'), ('journal_id', '=', self.journal_id.id)])
             if not statement_id:
                 raise ValidationError(_('There is no statement opened this day'))
             else:

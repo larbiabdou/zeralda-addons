@@ -9,9 +9,13 @@ class AccountBankStatementLine(models.Model):
         ('cash_in', 'Cash In'),
         ('cash_out', 'Cash Out'),
         ('customer_cash_in', 'Customer Cash In'),
-        ('supplier_cash_out', 'Supplier Cash Out')
+        ('supplier_cash_out', 'Supplier Cash Out'),
+        ('pay', 'Pay Employee')
     ], string="Type", required=True, default='cash_in')
-
+    employee_id = fields.Many2one(
+        comodel_name='hr.employee',
+        string='Employee_id',
+        required=False)
     create_from_payment = fields.Boolean(
         string='create_from_payment',
         required=False)
@@ -250,6 +254,16 @@ class AccountBankStatement(models.Model):
             'view_mode': 'form',
             'target': 'new',
             'context': {'default_type': 'cash_in', 'default_statement_id': self.id},
+        }
+
+    def open_pay_wizard(self):
+        return {
+            'name': 'Pay Employee',
+            'type': 'ir.actions.act_window',
+            'res_model': 'bank.statement.line.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_type': 'pay', 'default_statement_id': self.id},
         }
 
     def open_cash_out_wizard(self):

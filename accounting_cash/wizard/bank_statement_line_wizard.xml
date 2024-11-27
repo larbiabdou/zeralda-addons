@@ -12,6 +12,7 @@
                             <field name="partner_id"
                                    invisible="type not in ['customer_cash_in', 'supplier_cash_out']"
                             required="type in ['customer_cash_in', 'supplier_cash_out']"/>
+                            <field name="employee_id" invisible="type != 'pay'" required="type == 'pay'"/>
                         </group>
                         <group>
                             <field name="amount" required="1"/>

@@ -80,6 +80,8 @@
                     <button name="open_cash_out_wizard" string="Cash Out" type="object" class="oe_highlight" invisible="state != 'open'"/>
                     <button name="open_customer_cash_in_wizard" string="Customer Cash In" type="object" class="oe_highlight" invisible="state != 'open'"/>
                     <button name="open_supplier_cash_out_wizard" string="Supplier Cash Out" type="object" class="oe_highlight" invisible="state != 'open'"/>
+                    <button name="open_pay_wizard" string="Pay Employee" type="object" class="oe_highlight" invisible="state != 'open'"/>
+
                     <button name="action_open_bank_reconcile_widget" type="object" string="Reconcile" class="oe_highlight" invisible="state in ['open', 'confirm']"/>
                     <button name="action_open" string="Open" type="object" class="oe_highlight" invisible="state != 'draft'"/>
 
@@ -132,7 +134,7 @@
                                     <field name="name"/>
                                     <field name="type"/>
                                     <field name="partner_id"/>
-
+                                    <field name="employee_id"/>
                                     <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                     <field name="is_reconciled" column_invisible="1"/>
                                     <button name="button_undo_reconciliation" type="object"

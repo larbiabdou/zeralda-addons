@@ -11,9 +11,13 @@ class BankStatementLineWizard(models.TransientModel):
         ('cash_in', 'Cash In'),
         ('cash_out', 'Cash Out'),
         ('customer_cash_in', 'Customer Cash In'),
-        ('supplier_cash_out', 'Supplier Cash Out')
+        ('supplier_cash_out', 'Supplier Cash Out'),
+        ('pay', 'Pay Employee')
     ], string="Type", required=True, default='cash_in')
-
+    employee_id = fields.Many2one(
+        comodel_name='hr.employee',
+        string='Employee_id',
+        required=False)
     def action_create_statement_line(self):
         """Creates a bank statement line based on the wizard data"""
         statement_id = self.env.context.get('default_statement_id')
@@ -25,5 +29,6 @@ class BankStatementLineWizard(models.TransientModel):
             'partner_id': self.partner_id.id,
             'amount': statement_amount,
             'payment_ref': self.reason,
+            'employee_id': self.employee_id,
             'type': self.type,
         })
