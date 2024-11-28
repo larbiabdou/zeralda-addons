@@ -25,7 +25,7 @@ class BankStatementLineWizard(models.TransientModel):
     def action_create_statement_line(self):
         """Creates a bank statement line based on the wizard data"""
         statement_id = self.env.context.get('default_statement_id')
-        statement_amount = self.amount if self.type in ('cash_in', 'customer_cash_in', 'pay') else -1 * self.amount
+        statement_amount = self.amount if self.type in ('cash_in', 'customer_cash_in') else -1 * self.amount
         if not statement_id:
             return
         line_id = self.env['account.bank.statement.line'].create({
