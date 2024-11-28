@@ -1,0 +1,483 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* accounting_cash
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 17.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-11-28 11:55+0000\n"
+"PO-Revision-Date: 2024-11-28 11:55+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: accounting_cash
+#: model:ir.model.fields,field_description:accounting_cash.field_account_cashbox_line__number
+msgid "#Coins/Bills"
+msgstr ""
+
+#. module: accounting_cash
+#: model:ir.actions.act_window,name:accounting_cash.open_account_journal_dashboard_kanban
+msgid "Accounting Dashboard"
+msgstr "Tableau de bord"
+
+#. module: accounting_cash
+#: model:ir.model.fields,field_description:accounting_cash.field_bank_statement_line_wizard__amount
+msgid "Amount"
+msgstr "Montant"
+
+#. module: accounting_cash
+#: model:ir.model,name:accounting_cash.model_account_bank_statement
+#: model_terms:ir.ui.view,arch_db:accounting_cash.view_account_bank_statement_form
+msgid "Bank Statement"
+msgstr "Relevé bancaire"
+
+#. module: accounting_cash
+#: model:ir.model,name:accounting_cash.model_account_bank_statement_cashbox
+msgid "Bank Statement Cashbox"
+msgstr "Caisse de relevé bancaire"
+
+#. module: accounting_cash
+#: model:ir.model,name:accounting_cash.model_account_bank_statement_closebalance
+msgid "Bank Statement Closing Balance"
+msgstr "Solde de clôture du relevé bancaire"
+
+#. module: accounting_cash
+#: model:ir.model,name:accounting_cash.model_account_bank_statement_line
+msgid "Bank Statement Line"
+msgstr "Ligne de relevé bancaire"
+
+#. module: accounting_cash
+#: model_terms:ir.actions.act_window,help:accounting_cash.open_account_journal_dashboard_kanban
+msgid "Browse available countries."
+msgstr ""
+
+#. module: accounting_cash
+#: model_terms:ir.ui.view,arch_db:accounting_cash.view_account_bnk_stmt_cashbox_footer
+#: model_terms:ir.ui.view,arch_db:accounting_cash.view_account_bnk_stmt_check
+#: model_terms:ir.ui.view,arch_db:accounting_cash.view_bank_statement_line_wizard_form
+msgid "Cancel"
+msgstr "Annuler"
+
+#. module: accounting_cash
+#: model:ir.ui.menu,name:accounting_cash.menu_cash_root
+msgid "Cash"
+msgstr "Caisse"
+
+#. module: accounting_cash
+#. odoo-python
+#: code:addons/accounting_cash/models/account_bank_statement.py:0
+#, python-format
+msgid "Cash Control"
+msgstr "Contrôle de caisse"
+
+#. module: accounting_cash
+#: model:ir.model.fields.selection,name:accounting_cash.selection__account_bank_statement_line__type__cash_in
+#: model:ir.model.fields.selection,name:accounting_cash.selection__bank_statement_line_wizard__type__cash_in
+#: model_terms:ir.ui.view,arch_db:accounting_cash.view_account_bank_statement_form
+msgid "Cash In"
+msgstr "Entrée d'argent"
+
+#. module: accounting_cash
+#: model:ir.model.fields.selection,name:accounting_cash.selection__account_bank_statement_line__type__cash_out
+#: model:ir.model.fields.selection,name:accounting_cash.selection__bank_statement_line_wizard__type__cash_out
+#: model_terms:ir.ui.view,arch_db:accounting_cash.view_account_bank_statement_form
+msgid "Cash Out"
+msgstr "Sortie d'argent"
+
+#. module: accounting_cash
+#. odoo-python
+#: code:addons/accounting_cash/models/account_bank_statement.py:0
+#, python-format
+msgid "Cash difference observed during the counting (Loss)"
+msgstr "Différence de trésorerie constatée lors du décompte (Perte)"
+
+#. module: accounting_cash
+#. odoo-python
+#: code:addons/accounting_cash/models/account_bank_statement.py:0
+#, python-format
+msgid "Cash difference observed during the counting (Profit)"
+msgstr "Différence de trésorerie constatée lors du décompte (Profit)"
+
+#. module: accounting_cash
+#: model:ir.model,name:accounting_cash.model_account_cashbox_line
+msgid "CashBox Line"
+msgstr "Ligne de caisse"
+
+#. module: accounting_cash
+#: model:ir.model.fields,field_description:accounting_cash.field_account_cashbox_line__cashbox_id
+msgid "Cashbox"
+msgstr "Caisse"
+
+#. module: accounting_cash
+#: model:ir.model.fields,field_description:accounting_cash.field_account_bank_statement_cashbox__cashbox_lines_ids
+msgid "Cashbox Lines"
+msgstr "Lignes de caisse"
+
+#. module: accounting_cash
+#: model:ir.actions.act_window,name:accounting_cash.action_view_account_bnk_stmt_check
+msgid "Check Closing Balance"
+msgstr ""
+
+#. module: accounting_cash
+#: model:ir.model.fields,field_description:accounting_cash.field_account_cashbox_line__coin_value
+msgid "Coin/Bill Value"
+msgstr "Valeur de la pièce/billet"
+
+#. module: accounting_cash
+#: model_terms:ir.ui.view,arch_db:accounting_cash.view_account_bnk_stmt_cashbox_footer
+#: model_terms:ir.ui.view,arch_db:accounting_cash.view_account_bnk_stmt_check
+msgid "Confirm"
+msgstr "Confirmer"
+
+#. module: accounting_cash
+#: model_terms:ir.ui.view,arch_db:accounting_cash.view_account_bnk_stmt_check
+msgid ""
+"Confirming this will create automatically a journal entry with the "
+"difference in the profit/loss account set on the cash journal."
+msgstr ""
+"Confirmer cela créera automatiquement une écriture de journal avec le "
+"différence dans le compte de profits/pertes défini sur le journal de caisse."
+
+#. module: accounting_cash
+#: model_terms:ir.ui.view,arch_db:accounting_cash.view_bank_statement_line_wizard_form
+msgid "Create"
+msgstr "Créer"
+
+#. module: accounting_cash
+#: model_terms:ir.ui.view,arch_db:accounting_cash.view_bank_statement_line_wizard_form
+msgid "Create Bank Statement Line"
+msgstr "Créer une ligne de relevé bancaire"
+
+#. module: accounting_cash
+#: model:ir.model.fields,field_description:accounting_cash.field_account_payment__create_from_statement
+msgid "Create_from_statement"
+msgstr ""
+
+#. module: accounting_cash
+#: model:ir.model.fields,field_description:accounting_cash.field_account_bank_statement_cashbox__create_uid
+#: model:ir.model.fields,field_description:accounting_cash.field_account_bank_statement_closebalance__create_uid
+#: model:ir.model.fields,field_description:accounting_cash.field_account_cashbox_line__create_uid
+#: model:ir.model.fields,field_description:accounting_cash.field_bank_statement_line_wizard__create_uid
+msgid "Created by"
+msgstr "Créer par"
+
+#. module: accounting_cash
+#: model:ir.model.fields,field_description:accounting_cash.field_account_bank_statement_cashbox__create_date
+#: model:ir.model.fields,field_description:accounting_cash.field_account_bank_statement_closebalance__create_date
+#: model:ir.model.fields,field_description:accounting_cash.field_account_cashbox_line__create_date
+#: model:ir.model.fields,field_description:accounting_cash.field_bank_statement_line_wizard__create_date
+msgid "Created on"
+msgstr "Crée le"
+
+#. module: accounting_cash
+#: model:ir.model.fields,field_description:accounting_cash.field_account_bank_statement_cashbox__currency_id
+#: model:ir.model.fields,field_description:accounting_cash.field_account_cashbox_line__currency_id
+msgid "Currency"
+msgstr "Devise"
+
+#. module: accounting_cash
+#: model:ir.model.fields.selection,name:accounting_cash.selection__account_bank_statement_line__type__customer_cash_in
+#: model:ir.model.fields.selection,name:accounting_cash.selection__bank_statement_line_wizard__type__customer_cash_in
+#: model_terms:ir.ui.view,arch_db:accounting_cash.view_account_bank_statement_form
+msgid "Customer Cash In"
+msgstr "Encaissement Client"
+
+#. module: accounting_cash
+#: model:ir.model.fields,field_description:accounting_cash.field_account_bank_statement__date
+msgid "Date"
+msgstr ""
+
+#. module: accounting_cash
+#: model:ir.model.fields,field_description:accounting_cash.field_account_bank_statement__difference
+msgid "Difference"
+msgstr "Différence"
+
+#. module: accounting_cash
+#: model:ir.model.fields,help:accounting_cash.field_account_bank_statement__difference
+msgid ""
+"Difference between the computed ending balance and the specified ending "
+"balance."
+msgstr ""
+"Différence entre le solde final calculé et le solde final spécifié"
+"équilibre."
+
+#. module: accounting_cash
+#: model:ir.model.fields,field_description:accounting_cash.field_account_bank_statement_cashbox__display_name
+#: model:ir.model.fields,field_description:accounting_cash.field_account_bank_statement_closebalance__display_name
+#: model:ir.model.fields,field_description:accounting_cash.field_account_cashbox_line__display_name
+#: model:ir.model.fields,field_description:accounting_cash.field_bank_statement_line_wizard__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: accounting_cash
+#: model:ir.model.fields.selection,name:accounting_cash.selection__account_bank_statement__state__draft
+msgid "Draft"
+msgstr "Brouillon"
+
+#. module: accounting_cash
+#: model:ir.model.fields,field_description:accounting_cash.field_account_bank_statement_line__employee_id
+#: model:ir.model.fields,field_description:accounting_cash.field_bank_statement_line_wizard__employee_id
+msgid "Employee"
+msgstr "Employé"
+
+#. module: accounting_cash
+#: model:ir.model.fields,field_description:accounting_cash.field_account_bank_statement_cashbox__end_bank_stmt_ids
+msgid "End Bank Stmt"
+msgstr "Fin du relevé bancaire"
+
+#. module: accounting_cash
+#: model:ir.model.fields,field_description:accounting_cash.field_account_bank_statement__cashbox_end_id
+msgid "Ending Cashbox"
+msgstr "Fin de la caisse"
+
+#. module: accounting_cash
+#: model:ir.model.fields,field_description:accounting_cash.field_account_bank_statement__first_line_index
+msgid "First Line Index"
+msgstr "Indice de première ligne"
+
+#. module: accounting_cash
+#: model:ir.model.fields,field_description:accounting_cash.field_account_bank_statement_cashbox__id
+#: model:ir.model.fields,field_description:accounting_cash.field_account_bank_statement_closebalance__id
+#: model:ir.model.fields,field_description:accounting_cash.field_account_cashbox_line__id
+#: model:ir.model.fields,field_description:accounting_cash.field_bank_statement_line_wizard__id
+msgid "ID"
+msgstr ""
+
+#. module: accounting_cash
+#: model_terms:ir.actions.act_window,help:accounting_cash.open_account_journal_dashboard_kanban
+msgid ""
+"If you have not installed a chart of account, please install one first.<br>"
+msgstr ""
+
+#. module: accounting_cash
+#: model:ir.model,name:accounting_cash.model_account_journal
+#: model:ir.model.fields,field_description:accounting_cash.field_account_bank_statement__journal_id
+msgid "Journal"
+msgstr ""
+
+#. module: accounting_cash
+#: model:ir.model.fields,field_description:accounting_cash.field_account_bank_statement_cashbox__write_uid
+#: model:ir.model.fields,field_description:accounting_cash.field_account_bank_statement_closebalance__write_uid
+#: model:ir.model.fields,field_description:accounting_cash.field_account_cashbox_line__write_uid
+#: model:ir.model.fields,field_description:accounting_cash.field_bank_statement_line_wizard__write_uid
+msgid "Last Updated by"
+msgstr "Dernière modification par"
+
+#. module: accounting_cash
+#: model:ir.model.fields,field_description:accounting_cash.field_account_bank_statement_cashbox__write_date
+#: model:ir.model.fields,field_description:accounting_cash.field_account_bank_statement_closebalance__write_date
+#: model:ir.model.fields,field_description:accounting_cash.field_account_cashbox_line__write_date
+#: model:ir.model.fields,field_description:accounting_cash.field_bank_statement_line_wizard__write_date
+msgid "Last Updated on"
+msgstr "Dernière modification le"
+
+#. module: accounting_cash
+#: model:ir.model.fields,field_description:accounting_cash.field_account_bank_statement__move_ids
+msgid "Move_ids"
+msgstr ""
+
+#. module: accounting_cash
+#: model_terms:ir.ui.view,arch_db:accounting_cash.view_account_bank_statement_form
+msgid "Moves"
+msgstr ""
+
+#. module: accounting_cash
+#: model:ir.model.fields,field_description:accounting_cash.field_account_bank_statement__name
+msgid "Name"
+msgstr "Référence"
+
+#. module: accounting_cash
+#: model:ir.model.fields.selection,name:accounting_cash.selection__account_bank_statement__state__open
+msgid "New"
+msgstr "Nouveau"
+
+#. module: accounting_cash
+#: model_terms:ir.ui.view,arch_db:accounting_cash.view_account_bank_statement_form
+msgid "Open"
+msgstr ""
+
+#. module: accounting_cash
+#: model:ir.model.fields,help:accounting_cash.field_account_cashbox_line__number
+msgid "Opening Unit Numbers"
+msgstr ""
+
+#. module: accounting_cash
+#: model:ir.model.fields,field_description:accounting_cash.field_bank_statement_line_wizard__partner_id
+msgid "Partner"
+msgstr "Partenaire"
+
+#. module: accounting_cash
+#: model:ir.model.fields.selection,name:accounting_cash.selection__account_bank_statement_line__type__pay
+#: model:ir.model.fields.selection,name:accounting_cash.selection__bank_statement_line_wizard__type__pay
+#: model_terms:ir.ui.view,arch_db:accounting_cash.view_account_bank_statement_form
+msgid "Pay Employee"
+msgstr "Salaire Employés"
+
+#. module: accounting_cash
+#: model:ir.model,name:accounting_cash.model_account_payment
+msgid "Payments"
+msgstr "Paiements"
+
+#. module: accounting_cash
+#. odoo-python
+#: code:addons/accounting_cash/models/account_bank_statement.py:0
+#, python-format
+msgid ""
+"Please go on the %s journal and define a Loss Account. This account will be "
+"used to record cash difference."
+msgstr ""
+
+#. module: accounting_cash
+#. odoo-python
+#: code:addons/accounting_cash/models/account_bank_statement.py:0
+#, python-format
+msgid ""
+"Please go on the %s journal and define a Profit Account. This account will "
+"be used to record cash difference."
+msgstr ""
+
+#. module: accounting_cash
+#: model:ir.model.fields,field_description:accounting_cash.field_account_bank_statement__previous_statement_id
+msgid "Previous Statement"
+msgstr "Déclaration précédente"
+
+#. module: accounting_cash
+#: model:ir.model.fields,field_description:accounting_cash.field_account_bank_statement_line__budget_post_id
+#: model:ir.model.fields,field_description:accounting_cash.field_bank_statement_line_wizard__budget_post_id
+#: model:ir.model.fields,field_description:accounting_cash.field_bank_statement_line_wizard__reason
+msgid "Reason"
+msgstr "Raisons"
+
+#. module: accounting_cash
+#: model_terms:ir.ui.view,arch_db:accounting_cash.view_account_bank_statement_form
+msgid "Reconcile"
+msgstr "Lettrer"
+
+#. module: accounting_cash
+#: model_terms:ir.ui.view,arch_db:accounting_cash.view_account_bank_statement_form
+msgid "Reopen"
+msgstr "Réouverture"
+
+#. module: accounting_cash
+#: model_terms:ir.ui.view,arch_db:accounting_cash.view_account_bank_statement_form
+msgid "Revert reconciliation"
+msgstr "Annuler le lettrage"
+
+#. module: accounting_cash
+#: model:ir.model.fields,field_description:accounting_cash.field_account_bank_statement_cashbox__start_bank_stmt_ids
+msgid "Start Bank Stmt"
+msgstr ""
+
+#. module: accounting_cash
+#: model:ir.model.fields,field_description:accounting_cash.field_account_bank_statement__cashbox_start_id
+msgid "Starting Cashbox"
+msgstr ""
+
+#. module: accounting_cash
+#: model_terms:ir.ui.view,arch_db:accounting_cash.view_account_bank_statement_form
+msgid "Statement Lines"
+msgstr ""
+
+#. module: accounting_cash
+#: model_terms:ir.ui.view,arch_db:accounting_cash.view_bank_statement_tree_cash
+msgid "Statements"
+msgstr ""
+
+#. module: accounting_cash
+#: model:ir.model.fields,field_description:accounting_cash.field_account_bank_statement__state
+msgid "Status"
+msgstr ""
+
+#. module: accounting_cash
+#: model:ir.model.fields,field_description:accounting_cash.field_account_cashbox_line__subtotal
+msgid "Subtotal"
+msgstr "Sous total"
+
+#. module: accounting_cash
+#: model:ir.model.fields.selection,name:accounting_cash.selection__account_bank_statement_line__type__supplier_cash_out
+#: model:ir.model.fields.selection,name:accounting_cash.selection__bank_statement_line_wizard__type__supplier_cash_out
+#: model_terms:ir.ui.view,arch_db:accounting_cash.view_account_bank_statement_form
+msgid "Supplier Cash Out"
+msgstr "Décaissement Fournisseur"
+
+#. module: accounting_cash
+#: model_terms:ir.ui.view,arch_db:accounting_cash.view_account_bnk_stmt_check
+msgid "The closing balance is different than the computed one!"
+msgstr "Le solde de clôture est différent de celui calculé !"
+
+#. module: accounting_cash
+#. odoo-python
+#: code:addons/accounting_cash/models/account_payment.py:0
+#, python-format
+msgid "There is no statement opened this day"
+msgstr "Il n'y a pas de relevé ouvert ce jour"
+
+#. module: accounting_cash
+#: model_terms:ir.actions.act_window,help:accounting_cash.open_account_journal_dashboard_kanban
+msgid "This is the accounting dashboard"
+msgstr "Voici le tableau de bord comptable"
+
+#. module: accounting_cash
+#: model:ir.model.fields,field_description:accounting_cash.field_account_bank_statement_cashbox__total
+msgid "Total"
+msgstr ""
+
+#. module: accounting_cash
+#: model:ir.model.fields,field_description:accounting_cash.field_account_bank_statement_line__type
+#: model:ir.model.fields,field_description:accounting_cash.field_bank_statement_line_wizard__type
+msgid "Type"
+msgstr ""
+
+#. module: accounting_cash
+#: model_terms:ir.ui.view,arch_db:accounting_cash.view_account_bank_statement_form
+msgid "Validate"
+msgstr "Valider"
+
+#. module: accounting_cash
+#: model:ir.model.fields.selection,name:accounting_cash.selection__account_bank_statement__state__confirm
+msgid "Validated"
+msgstr "Validé"
+
+#. module: accounting_cash
+#: model:ir.model.constraint,message:accounting_cash.constraint_account_bank_statement_unique_statement_per_day_per_journal
+msgid ""
+"Vous ne pouvez pas créer plusieurs relevés bancaires pour le même journal et"
+" le même jour."
+msgstr ""
+
+#. module: accounting_cash
+#: model:ir.model,name:accounting_cash.model_bank_statement_line_wizard
+msgid "Wizard for Creating Bank Statement Lines"
+msgstr "Assistant de création de lignes de relevé bancaire"
+
+#. module: accounting_cash
+#. odoo-python
+#: code:addons/accounting_cash/models/account_bank_statement.py:0
+#, python-format
+msgid "You can not delete a posted Statement !"
+msgstr "Vous ne pouvez pas supprimer un relevé publié!"
+
+#. module: accounting_cash
+#: model:ir.model.fields,field_description:accounting_cash.field_account_bank_statement_line__create_from_payment
+msgid "create_from_payment"
+msgstr ""
+
+#. module: accounting_cash
+#: model:ir.ui.menu,name:accounting_cash.menu_cash_dashboard
+msgid "dashboard"
+msgstr "Tableau de bord"
+
+#. module: accounting_cash
+#: model:ir.model.fields,help:accounting_cash.field_account_bank_statement__previous_statement_id
+msgid "technical field to compute starting balance correctly"
+msgstr "Domaine technique pour calculer correctement le solde de départ"
+
+#. module: accounting_cash
+#: model_terms:ir.ui.view,arch_db:accounting_cash.view_account_bank_statement_form
+msgid "→ Count"
+msgstr "→ Compter"
