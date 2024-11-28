@@ -17,6 +17,7 @@
                         <group>
                             <field name="amount" required="1"/>
                             <field name="budget_post_id" required="1"/>
+                            <field name="reason"/>
                         </group>
                     </group>
                 </sheet>

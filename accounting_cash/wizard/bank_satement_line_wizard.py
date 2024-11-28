@@ -6,7 +6,7 @@ class BankStatementLineWizard(models.TransientModel):
 
     partner_id = fields.Many2one('res.partner', string="Partner")
     amount = fields.Float(string="Amount", required=True)
-    reason = fields.Char(string="Reason")
+    reason = fields.Char(string="Ref")
     type = fields.Selection([
         ('cash_in', 'Cash In'),
         ('cash_out', 'Cash Out'),
@@ -32,7 +32,7 @@ class BankStatementLineWizard(models.TransientModel):
             'statement_id': statement_id,
             'partner_id': self.partner_id.id,
             'amount': statement_amount,
-            'payment_ref': self.budget_post_id.name,
+            'payment_ref': self.reason,
             'employee_id': self.employee_id.id,
             'type': self.type,
             'budget_post_id': self.budget_post_id.id,
