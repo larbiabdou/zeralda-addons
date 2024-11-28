@@ -4,7 +4,7 @@
     'summary': 'Accounting cash',
     'description': 'Accounting cash',
     'category': 'account',
-    'depends': ['account_accountant', 'hr'],
+    'depends': ['account_accountant', 'hr', 'account_budget'],
     'data': [
         'security/ir.model.access.csv',
         'wizard/bank_statement_line_wizard.xml',

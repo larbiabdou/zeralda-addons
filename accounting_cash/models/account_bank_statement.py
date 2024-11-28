@@ -20,6 +20,11 @@ class AccountBankStatementLine(models.Model):
         string='create_from_payment',
         required=False)
 
+    budget_post_id = fields.Many2one(
+        comodel_name='account.budget.post',
+        string='Reason',
+        required=False)
+
     def button_undo_reconciliation(self):
         ''' Undo the reconciliation mades on the statement line and reset their journal items
         to their original states.

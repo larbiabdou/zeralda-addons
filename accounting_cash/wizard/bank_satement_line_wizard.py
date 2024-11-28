@@ -18,6 +18,10 @@ class BankStatementLineWizard(models.TransientModel):
         comodel_name='hr.employee',
         string='Employee',
         required=False)
+    budget_post_id = fields.Many2one(
+        comodel_name='account.budget.post',
+        string='Reason',
+        required=False)
     def action_create_statement_line(self):
         """Creates a bank statement line based on the wizard data"""
         statement_id = self.env.context.get('default_statement_id')
@@ -28,7 +32,8 @@ class BankStatementLineWizard(models.TransientModel):
             'statement_id': statement_id,
             'partner_id': self.partner_id.id,
             'amount': statement_amount,
-            'payment_ref': self.reason,
+            'payment_ref': self.budget_post_id.name,
             'employee_id': self.employee_id.id,
             'type': self.type,
+            'budget_post_id': self.budget_post_id.id,
         })

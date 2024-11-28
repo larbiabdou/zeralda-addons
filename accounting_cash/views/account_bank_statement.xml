@@ -131,6 +131,7 @@
                             <field name="line_ids" widget="one2many_list">
                                 <tree string="Statement Lines" create="False">
                                     <field name="name"/>
+                                    <field name="budget_post_id"/>
                                     <field name="type"/>
                                     <field name="partner_id"/>
                                     <field name="employee_id"/>
