@@ -132,6 +132,7 @@
                                 <tree string="Statement Lines" create="False">
                                     <field name="name"/>
                                     <field name="budget_post_id"/>
+                                    <field name="payment_ref"/>
                                     <field name="type"/>
                                     <field name="partner_id"/>
                                     <field name="employee_id"/>
