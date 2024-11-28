@@ -102,7 +102,7 @@
 
                     <group>
                         <group>
-                            <field name="name"/>
+                            <field name="name" readonly="state != 'draft'"/>
                             <field name="date" readonly="state != 'draft'"/>
                             <field name="journal_id" readonly="state != 'draft'"/>
                             <field name="cashbox_start_id" invisible="1"/>
@@ -114,7 +114,7 @@
                         <group>
                             <label for="balance_start"/>
                             <div>
-                                <field name="balance_start" class="oe_inline" readonly="state != 'draft'"/>
+                                <field name="balance_start" class="oe_inline" readonly="state == 'confirm'"/>
                                 <button name="open_cashbox_id" invisible="state != 'draft'" string="&#8594; Count" type="object" class="oe_edit_only oe_link oe_inline" context="{'balance':'start'}"/>
                             </div>
                             <label for="balance_end_real"/>

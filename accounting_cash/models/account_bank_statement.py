@@ -66,6 +66,67 @@ class AccountBankStatementLine(models.Model):
             payment_id = Payment.create(payment_vals)
             return payment_id
 
+    def _prepare_move_line_default_vals(self, counterpart_account_id=None):
+        """ Prepare the dictionary to create the default account.move.lines for the current account.bank.statement.line
+        record.
+        :return: A list of python dictionary to be passed to the account.move.line's 'create' method.
+        """
+        self.ensure_one()
+
+        if not counterpart_account_id:
+            counterpart_account_id = self.journal_id.suspense_account_id.id
+            if self.type == 'customer_cash_in':
+                counterpart_account_id = self.partner_id.property_account_receivable_id.id
+            elif self.type == 'supplier_cash_out':
+                counterpart_account_id = self.partner_id.property_account_payable_id.id
+
+        if not counterpart_account_id:
+            raise UserError(_(
+                "You can't create a new statement line without a suspense account set on the %s journal.",
+                self.journal_id.display_name,
+            ))
+
+        company_currency = self.journal_id.company_id.sudo().currency_id
+        journal_currency = self.journal_id.currency_id or company_currency
+        foreign_currency = self.foreign_currency_id or journal_currency or company_currency
+
+        journal_amount = self.amount
+        if foreign_currency == journal_currency:
+            transaction_amount = journal_amount
+        else:
+            transaction_amount = self.amount_currency
+        if journal_currency == company_currency:
+            company_amount = journal_amount
+        elif foreign_currency == company_currency:
+            company_amount = transaction_amount
+        else:
+            company_amount = journal_currency\
+                ._convert(journal_amount, company_currency, self.journal_id.company_id, self.date)
+
+        liquidity_line_vals = {
+            'name': self.payment_ref,
+            'move_id': self.move_id.id,
+            'partner_id': self.partner_id.id,
+            'account_id': self.journal_id.default_account_id.id,
+            'currency_id': journal_currency.id,
+            'amount_currency': journal_amount,
+            'debit': company_amount > 0 and company_amount or 0.0,
+            'credit': company_amount < 0 and -company_amount or 0.0,
+        }
+
+        # Create the counterpart line values.
+        counterpart_line_vals = {
+            'name': self.payment_ref,
+            'account_id': counterpart_account_id,
+            'move_id': self.move_id.id,
+            'partner_id': self.partner_id.id,
+            'currency_id': foreign_currency.id,
+            'amount_currency': -transaction_amount,
+            'debit': -company_amount if company_amount < 0.0 else 0.0,
+            'credit': company_amount if company_amount > 0.0 else 0.0,
+        }
+        return [liquidity_line_vals, counterpart_line_vals]
+
     def _seek_for_lines(self):
         """ Helper used to dispatch the journal items between:
         - The lines using the liquidity account.
@@ -78,13 +139,15 @@ class AccountBankStatementLine(models.Model):
         other_lines = self.env['account.move.line']
         partner_account_id = False
         if self.type == 'customer_cash_in':
-            partner_account_id = self.partner_id.property_account_receivable_id
+            suspense_account = self.partner_id.property_account_receivable_id
         elif self.type == 'supplier_cash_out':
-            partner_account_id = self.partner_id.property_account_payable_id
+            suspense_account = self.partner_id.property_account_payable_id
+        else:
+            suspense_account = self.journal_id.suspense_account_id
         for line in self.move_id.line_ids:
             if line.account_id == self.journal_id.default_account_id:
                 liquidity_lines += line
-            elif line.account_id == self.journal_id.suspense_account_id or (partner_account_id and line.account_id == partner_account_id):
+            elif line.account_id == suspense_account:
                 suspense_lines += line
             else:
                 other_lines += line
@@ -92,6 +155,43 @@ class AccountBankStatementLine(models.Model):
             liquidity_lines = self.move_id.line_ids.filtered(lambda l: l.account_id.account_type in ('asset_cash', 'liability_credit_card'))
             other_lines -= liquidity_lines
         return liquidity_lines, suspense_lines, other_lines
+
+    @api.depends('journal_id', 'currency_id', 'amount', 'foreign_currency_id', 'amount_currency',
+                 'move_id.to_check',
+                 'move_id.line_ids.account_id', 'move_id.line_ids.amount_currency',
+                 'move_id.line_ids.amount_residual_currency', 'move_id.line_ids.currency_id',
+                 'move_id.line_ids.matched_debit_ids', 'move_id.line_ids.matched_credit_ids')
+    def _compute_is_reconciled(self):
+        """ Compute the field indicating if the statement lines are already reconciled with something.
+        This field is used for display purpose (e.g. display the 'cancel' button on the statement lines).
+        Also computes the residual amount of the statement line.
+        """
+        for st_line in self:
+            _liquidity_lines, suspense_lines, _other_lines = st_line._seek_for_lines()
+
+            # Compute residual amount
+            if st_line.to_check:
+                st_line.amount_residual = -st_line.amount_currency if st_line.foreign_currency_id else -st_line.amount
+            elif suspense_lines.account_id.reconcile:
+                st_line.amount_residual = sum(suspense_lines.mapped('amount_residual_currency'))
+            else:
+                st_line.amount_residual = sum(suspense_lines.mapped('amount_currency'))
+
+            # Compute is_reconciled
+            if not st_line.id:
+                # New record: The journal items are not yet there.
+                st_line.is_reconciled = False
+            elif suspense_lines:
+                # In case of the statement line comes from an older version, it could have a residual amount of zero.
+                if not suspense_lines.currency_id.is_zero(st_line.amount_residual) and not suspense_lines.currency_id.is_zero(abs(st_line.amount) - abs(st_line.amount_residual)):
+                    st_line.is_reconciled = True
+                else:
+                    st_line.is_reconciled = suspense_lines.currency_id.is_zero(st_line.amount_residual)
+            elif st_line.currency_id.is_zero(st_line.amount):
+                st_line.is_reconciled = True
+            else:
+                # The journal entry seems reconciled.
+                st_line.is_reconciled = True
 
     @api.model
     def create(self, vals):
