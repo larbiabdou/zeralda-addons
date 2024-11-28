@@ -82,11 +82,10 @@
                     <button name="open_supplier_cash_out_wizard" string="Supplier Cash Out" type="object" class="oe_highlight" invisible="state != 'open'"/>
                     <button name="open_pay_wizard" string="Pay Employee" type="object" class="oe_highlight" invisible="state != 'open'"/>
 
-                    <button name="action_open_bank_reconcile_widget" type="object" string="Reconcile" class="oe_highlight" invisible="state in ['open', 'confirm']"/>
+                    <button name="action_open_bank_reconcile_widget" type="object" string="Reconcile" class="oe_highlight" invisible="state != 'open'"/>
                     <button name="action_open" string="Open" type="object" class="oe_highlight" invisible="state != 'draft'"/>
 
-                    <button name="action_post" string="Post" type="object" class="oe_highlight" invisible="state != 'open'"/>
-                    <button name="action_validate" string="Validate" type="object" class="oe_highlight" invisible="state != 'posted'"/>
+                    <button name="action_validate" string="Validate" type="object" class="oe_highlight" invisible="state != 'open'"/>
                     <button name="action_reopen" string="Reopen" type="object" class="oe_highlight" invisible="state != 'confirm'"/>
                     <field name="state" widget="statusbar"/>
                 </header>

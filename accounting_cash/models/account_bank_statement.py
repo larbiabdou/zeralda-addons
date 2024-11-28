@@ -133,7 +133,6 @@ class AccountBankStatement(models.Model):
     state = fields.Selection(string='Status', required=True, readonly=True, copy=False, tracking=True, selection=[
         ('draft', 'Draft'),
         ('open', 'New'),
-        ('posted', 'Processing'),
         ('confirm', 'Validated'),
     ], default='draft',)
 
@@ -192,10 +191,6 @@ class AccountBankStatement(models.Model):
         for record in self:
             record.state = 'open'
 
-    def action_post(self):
-        for record in self:
-            record.state = 'posted'
-
     def action_validate(self):
         for record in self:
             record._check_cash_balance_end_real_same_as_computed()
@@ -203,7 +198,7 @@ class AccountBankStatement(models.Model):
 
     def action_reopen(self):
         for record in self:
-            record.state = 'posted'
+            record.state = 'open'
 
     def unlink(self):
         for record in self:
