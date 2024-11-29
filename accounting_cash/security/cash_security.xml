@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.module.category" id="module_category_cash">
+            <field name="name">Caisse</field>
+            <field name="sequence">15</field>
+        </record>
+    <record id="group_cashier_user" model="res.groups">
+        <field name="name">Caisse - Utilisateur</field>
+        <field name="category_id" ref="module_category_cash"/>
+    </record>
+
+    <record id="group_cashier_admin" model="res.groups">
+        <field name="name">Caisse - Administrateur</field>
+        <field name="category_id" ref="module_category_cash"/>
+        <field name="implied_ids" eval="[(4, ref('group_cashier_user'))]"/>
+    </record>
+</odoo>

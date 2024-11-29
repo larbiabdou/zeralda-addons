@@ -60,6 +60,7 @@ class AccountBankStatementLine(models.Model):
                 'payment_type': payment_type,
                 'partner_type': partner_type,
                 'create_from_statement': True,
+                'date': vals.get('date'),
                 'journal_id': self.journal_id.id,  # Lié au journal du statement
                 'payment_method_line_id': payment_method_line_id.id,  # Méthode de paiement manuelle
             }
@@ -225,6 +226,7 @@ class AccountBankStatementLine(models.Model):
     @api.model
     def create(self, vals):
         # Créer la ligne
+
         statement_line = super(AccountBankStatementLine, self).create(vals)
         # Créer un paiement si nécessaire
         if 'type' in vals and statement_line.type in ['customer_cash_in', 'supplier_cash_out'] and not statement_line.create_from_payment:
@@ -275,6 +277,12 @@ class AccountBankStatement(models.Model):
         comodel_name='account.bank.statement.line',
         compute=False, index=False,
     )
+
+    @api.model
+    def create(self, vals):
+        if not self.env.user.has_group('accounting_cash.group_cashier_admin'):
+            raise ValidationError(_("You have not the right to create a statement"))
+        return super(AccountBankStatement, self).create(vals)
 
     def _compute_date_index(self):
         return True

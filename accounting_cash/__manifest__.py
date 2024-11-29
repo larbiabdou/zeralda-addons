@@ -7,6 +7,7 @@
     'depends': ['account_accountant', 'hr', 'account_budget'],
     'data': [
         'security/ir.model.access.csv',
+        'security/cash_security.xml',
         'wizard/bank_statement_line_wizard.xml',
         'views/account_journal_views.xml',
         'views/menu_views.xml',

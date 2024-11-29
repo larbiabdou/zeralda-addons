@@ -76,17 +76,17 @@
         <field name="arch" type="xml">
             <form string="Bank Statement">
                 <header>
-                    <button name="open_cash_in_wizard" string="Cash In" type="object" class="oe_highlight" invisible="state != 'open'"/>
-                    <button name="open_cash_out_wizard" string="Cash Out" type="object" class="oe_highlight" invisible="state != 'open'"/>
-                    <button name="open_customer_cash_in_wizard" string="Customer Cash In" type="object" class="oe_highlight" invisible="state != 'open'"/>
-                    <button name="open_supplier_cash_out_wizard" string="Supplier Cash Out" type="object" class="oe_highlight" invisible="state != 'open'"/>
-                    <button name="open_pay_wizard" string="Pay Employee" type="object" class="oe_highlight" invisible="state != 'open'"/>
+                    <button name="open_cash_in_wizard" string="Cash In" type="object" class="oe_highlight" invisible="state != 'open'" groups="accounting_cash.group_cashier_admin"/>
+                    <button name="open_cash_out_wizard" string="Cash Out" type="object" class="oe_highlight" invisible="state != 'open'" groups="accounting_cash.group_cashier_admin"/>
+                    <button name="open_customer_cash_in_wizard" string="Customer Cash In" type="object" class="oe_highlight" invisible="state != 'open'" groups="accounting_cash.group_cashier_admin"/>
+                    <button name="open_supplier_cash_out_wizard" string="Supplier Cash Out" type="object" class="oe_highlight" invisible="state != 'open'" groups="accounting_cash.group_cashier_admin"/>
+                    <button name="open_pay_wizard" string="Pay Employee" type="object" class="oe_highlight" invisible="state != 'open'" groups="accounting_cash.group_cashier_admin"/>
 
-                    <button name="action_open_bank_reconcile_widget" type="object" string="Reconcile" class="oe_highlight" invisible="state != 'open'"/>
-                    <button name="action_open" string="Open" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="action_open_bank_reconcile_widget" type="object" string="Reconcile" class="oe_highlight" invisible="state != 'open'" groups="accounting_cash.group_cashier_admin"/>
+                    <button name="action_open" string="Open" type="object" class="oe_highlight" invisible="state != 'draft'" groups="accounting_cash.group_cashier_admin"/>
 
-                    <button name="action_validate" string="Validate" type="object" class="oe_highlight" invisible="state != 'open'"/>
-                    <button name="action_reopen" string="Reopen" type="object" class="oe_highlight" invisible="state != 'confirm'"/>
+                    <button name="action_validate" string="Validate" type="object" class="oe_highlight" invisible="state != 'open'" groups="accounting_cash.group_cashier_admin"/>
+                    <button name="action_reopen" string="Reopen" type="object" class="oe_highlight" invisible="state != 'confirm'" groups="accounting_cash.group_cashier_admin"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
@@ -115,12 +115,12 @@
                             <label for="balance_start"/>
                             <div>
                                 <field name="balance_start" class="oe_inline" readonly="state == 'confirm'"/>
-                                <button name="open_cashbox_id" invisible="state != 'draft'" string="&#8594; Count" type="object" class="oe_edit_only oe_link oe_inline" context="{'balance':'start'}"/>
+                                <button name="open_cashbox_id" invisible="state != 'draft'" string="&#8594; Count" type="object" groups="accounting_cash.group_cashier_admin" class="oe_edit_only oe_link oe_inline" context="{'balance':'start'}"/>
                             </div>
                             <label for="balance_end_real"/>
                             <div>
                                 <field name="balance_end_real" class="oe_inline" readonly="state == 'confirm'"/>
-                                <button name="open_cashbox_id" invisible="state == 'confirm'" string="&#8594; Count" type="object" class="oe_edit_only oe_link oe_inline" context="{'balance':'close'}"/>
+                                <button name="open_cashbox_id" invisible="state == 'confirm'" string="&#8594; Count" type="object" groups="accounting_cash.group_cashier_admin" class="oe_edit_only oe_link oe_inline" context="{'balance':'close'}"/>
 
                             </div>
                             <field name="balance_end" widget="monetary" options="{'currency_field': 'currency_id'}"/>
@@ -139,7 +139,7 @@
                                     <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                     <field name="is_reconciled" column_invisible="1"/>
                                     <button name="button_undo_reconciliation" type="object"
-                                            invisible="is_reconciled == False"
+                                            invisible="is_reconciled == False" groups="accounting_cash.group_cashier_admin"
                                             string="Revert reconciliation" icon="fa-undo"/>
                                 </tree>
                             </field>
