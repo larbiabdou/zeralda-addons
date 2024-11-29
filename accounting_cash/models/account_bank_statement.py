@@ -127,6 +127,35 @@ class AccountBankStatementLine(models.Model):
         }
         return [liquidity_line_vals, counterpart_line_vals]
 
+    def _get_accounting_amounts_and_currencies(self):
+        """ Retrieve the transaction amount, journal amount and the company amount with their corresponding currencies
+        from the journal entry linked to the statement line.
+        All returned amounts will be positive for an inbound transaction, negative for an outbound one.
+
+        :return: (
+            transaction_amount, transaction_currency,
+            journal_amount, journal_currency,
+            company_amount, company_currency,
+        )
+        """
+        self.ensure_one()
+        liquidity_line, suspense_line, other_lines = self._seek_for_lines()
+        if suspense_line and not other_lines:
+            transaction_amount = -suspense_line[0].amount_currency
+            transaction_currency = suspense_line[0].currency_id
+        else:
+            # In case of to_check or partial reconciliation, we can't trust the suspense line.
+            transaction_amount = self.amount_currency if self.foreign_currency_id else self.amount
+            transaction_currency = self.foreign_currency_id or liquidity_line.currency_id
+        return (
+            transaction_amount,
+            transaction_currency,
+            sum(liquidity_line.mapped('amount_currency')),
+            liquidity_line.currency_id,
+            sum(liquidity_line.mapped('balance')),
+            liquidity_line.company_currency_id,
+        )
+
     def _seek_for_lines(self):
         """ Helper used to dispatch the journal items between:
         - The lines using the liquidity account.
