@@ -22,9 +22,11 @@ class BankStatementLineWizard(models.TransientModel):
         comodel_name='account.budget.post',
         string='Reason',
         required=False)
+
     def action_create_statement_line(self):
         """Creates a bank statement line based on the wizard data"""
         statement_id = self.env.context.get('default_statement_id')
+        statement = self.env['account.bank.statement'].browse(statement_id)
         statement_amount = self.amount if self.type in ('cash_in', 'customer_cash_in') else -1 * self.amount
         if not statement_id:
             return
@@ -34,6 +36,7 @@ class BankStatementLineWizard(models.TransientModel):
             'amount': statement_amount,
             'payment_ref': self.reason,
             'employee_id': self.employee_id.id,
+            'date': statement.date,
             'type': self.type,
             'budget_post_id': self.budget_post_id.id,
         })
