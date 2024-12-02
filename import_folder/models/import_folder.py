@@ -50,6 +50,10 @@ class ImportFolder(models.Model):
         default=lambda self: self.env.company,
     required = False)
 
+    matrix_ids = fields.Many2many(
+        comodel_name='landed.cost.matrix',
+        string='Matrix')
+
     def action_view_landed_costs(self):
         self.ensure_one()
         action = self.env["ir.actions.actions"]._for_xml_id("stock_landed_costs.action_stock_landed_cost")
@@ -85,5 +89,67 @@ class ImportFolder(models.Model):
                     'split_method': l.product_id.split_method_landed_cost or 'equal',
                 }) for l in landed_costs_lines],
             })
-            action = self.env["ir.actions.actions"]._for_xml_id("stock_landed_costs.action_stock_landed_cost")
-            return dict(action, view_mode='form', res_id=landed_costs.id, views=[(False, 'form')])
+            if landed_costs:
+                landed_costs.button_validate()
+                record.compute_landed_cost_matrix()
+
+    def compute_landed_cost_matrix(self):
+        for record in self:
+            record.matrix_ids = [(5, 0, 0)]
+            data = []
+            for landed_cost in record.landed_costs_ids:
+                products = landed_cost.valuation_adjustment_lines.mapped('product_id')
+                for product in products:
+                    lines = landed_cost.valuation_adjustment_lines.filtered(lambda l: l.product_id == product)
+                    purchase_line = record.purchase_order_ids.order_line.filtered(lambda l: l.product_id == product)
+                    data.append([0, 0, {
+                        'product_name': product.name,
+                        'value': lines[0].quantity,
+                        'title': 'Quantity'
+                    }])
+                    if purchase_line:
+                        unit_price = purchase_line[0].price_unit
+                        data.append([0, 0, {
+                            'product_name': product.name,
+                            'value': unit_price,
+                            'title': 'Purchase price'
+                        }])
+                    data.append([0, 0, {
+                        'product_name': product.name,
+                        'value': lines[0].former_cost / lines[0].quantity,
+                        'title': 'Converted price'
+                    }])
+                    total_cost = 0
+                    for line in lines:
+                        total_cost += (line.additional_landed_cost / lines[0].quantity)
+                        data.append([0, 0, {
+                            'product_name': product.name,
+                            'value': line.additional_landed_cost / lines[0].quantity,
+                            'title': line.cost_line_id.name
+                        }])
+                    final_cost = (lines[0].former_cost / lines[0].quantity) + total_cost
+                    data.append([0, 0, {
+                        'product_name': product.name,
+                        'value': final_cost,
+                        'title': 'Final cost'
+                    }])
+            record.matrix_ids = data
+
+class LandedCostMatrix(models.Model):
+    _name = 'landed.cost.matrix'
+    _description = 'Landed Cost Matrix'
+
+    product_name = fields.Char(
+        string='Product_name',
+        required=False)
+
+    value = fields.Float(
+        string='Value',
+        required=False)
+
+    title = fields.Char(
+        string='Title',
+        required=False)
+
+
+

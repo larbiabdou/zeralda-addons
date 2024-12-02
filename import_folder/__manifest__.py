@@ -4,7 +4,7 @@
     'summary': 'Import Folder',
     'description': 'Import Folder',
     'category': 'Purchase',
-    'depends': ['purchase', 'stock_landed_costs'],
+    'depends': ['purchase', 'stock_landed_costs', 'web_widget_x2many_2d_matrix'],
     'data': [
         'security/ir.model.access.csv',
         'views/import_folder_views.xml',
