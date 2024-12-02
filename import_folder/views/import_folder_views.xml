@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_import_folder_tree" model="ir.ui.view">
+        <field name="name">import.folder.tree</field>
+        <field name="model">import.folder</field>
+        <field name="arch" type="xml">
+            <tree string="_tree">
+                <field name="name" placeholder="Enter Folder Name" required="1"/>
+                <field name="reference" placeholder="Enter Reference"/>
+                <field name="port_of_embarkation"/>
+                <field name="shipping_company"/>
+                <field name="opening_date"/>
+            </tree>
+        </field>
+    </record>
+    <record id="view_import_folder_form" model="ir.ui.view">
+        <field name="name">import.folder.form</field>
+        <field name="model">import.folder</field>
+        <field name="arch" type="xml">
+            <form string="Import Folder">
+                <header>
+                    <button name="button_create_landed_costs" class="oe_highlight" type="object" string="Create Landed Costs" invisible="not landed_costs_visible"/>
+                    <field name="landed_costs_visible" invisible="1"/>
+
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <field name="landed_costs_ids" invisible="1"/>
+                        <button string="Landed Costs" type="object"
+                                name="action_view_landed_costs"
+                                class="oe_stat_button" icon="fa-plus-square"
+                                invisible="not landed_costs_ids"/>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name" placeholder="Enter Folder Name" required="1"/>
+                            <field name="reference" placeholder="Enter Reference"/>
+                            <field name="port_of_embarkation"/>
+                            <field name="shipping_company"/>
+                            <field name="opening_date"/>
+                        </group>
+                        <group>
+                            <field name="purchase_order_reference" widget="many2many_tags"/>
+                            <field name="reception_reference" widget="many2many_tags"/>
+                            <field name="etd" placeholder="Estimated Time of Departure"/>
+                            <field name="eta" placeholder="Estimated Time of Arrival"/>
+                            <field name="company_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="comment" widget="text"/>
+                    </group>
+                    <notebook>
+                        <page name="purchases" string="Purchases">
+                            <field name="purchase_order_ids" readonly="1"/>
+                        </page>
+                        <page name="invoices" string="Invoices">
+                            <field name="invoice_ids" readonly="1">
+                                <tree>
+                                    <field name="invoice_import_type"/>
+                                    <field name="name"/>
+                                    <field name="partner_id"/>
+                                    <field name="invoice_date"/>
+                                    <field name="invoice_date_due"/>
+                                    <field name="amount_untaxed_signed"/>
+                                    <field name="amount_total_signed"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_import_folder" model="ir.actions.act_window">
+        <field name="name">Import Folders</field>
+        <field name="res_model">import.folder</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+
+    <!-- Sous-menu Import Folders -->
+    <menuitem id="menu_import_folder" name="Import Folders" parent="purchase.menu_purchase_root" action="action_import_folder" sequence="20"/>
+
+</odoo>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inherit Form View to Modify it -->
+    <record id="purchase_order_form" model="ir.ui.view">
+        <field name="name">purchase_order_form</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='tax_calculation_rounding_method']" position="after">
+                <field name="is_import_folder"/>
+                <field name="import_folder_id" required="is_import_folder" invisible="not is_import_folder"/>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>
