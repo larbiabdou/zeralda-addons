@@ -122,11 +122,11 @@ class ImportFolder(models.Model):
                     total_cost = 0
                     for line in lines:
                         total_cost += (line.additional_landed_cost / lines[0].quantity)
-                        data.append([0, 0, {
-                            'product_name': product.name,
-                            'value': line.additional_landed_cost / lines[0].quantity,
-                            'title': line.cost_line_id.name
-                        }])
+                    data.append([0, 0, {
+                        'product_name': product.name,
+                        'value': total_cost,
+                        'title': 'Total Cost'
+                    }])
                     final_cost = (lines[0].former_cost / lines[0].quantity) + total_cost
                     data.append([0, 0, {
                         'product_name': product.name,
