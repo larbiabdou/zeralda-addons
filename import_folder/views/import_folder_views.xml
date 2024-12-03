@@ -19,7 +19,9 @@
         <field name="arch" type="xml">
             <form string="Import Folder">
                 <header>
-                    <button name="button_create_landed_costs" class="oe_highlight" type="object" string="Create Landed Costs" invisible="not landed_costs_visible"/>
+                    <button name="button_create_landed_costs" class="oe_highlight" type="object" string="Create Landed Costs" invisible="not landed_costs_visible or state != 'in_progress'"/>
+                    <button name="button_confirm" class="oe_highlight" type="object" string="Confirm" invisible="state != 'draft'"/>
+
                     <field name="landed_costs_visible" invisible="1"/>
 
                     <field name="state" widget="statusbar"/>
@@ -31,18 +33,34 @@
                                 name="action_view_landed_costs"
                                 class="oe_stat_button" icon="fa-plus-square"
                                 invisible="not landed_costs_ids"/>
+                         <button type="object"
+                                name="action_view_receptions"
+                                class="oe_stat_button" icon="fa-truck"
+                                invisible="count_reception == 0">
+                             <field name="count_reception" widget="statinfo" string="Receptions"/>
+                         </button>
+                        <button type="object"
+                                name="action_view_purchases"
+                                class="oe_stat_button" icon="fa-shopping-cart"
+                                invisible="count_purchases == 0">
+                            <field name="count_purchases" widget="statinfo" string="Purchases"/>
+                        </button>
                     </div>
                     <group>
                         <group>
-                            <field name="name" placeholder="Enter Folder Name" required="1"/>
-                            <field name="reference" placeholder="Enter Reference"/>
-                            <field name="port_of_embarkation"/>
-                            <field name="shipping_company"/>
-                            <field name="opening_date"/>
+                            <field name="name" placeholder="Enter Folder Name" required="1" readonly="state != 'draft'"/>
+                            <field name="reference" placeholder="Enter Reference" readonly="state != 'draft'"/>
+                            <field name="port_of_embarkation" readonly="state != 'draft'"/>
+                            <field name="shipping_company" readonly="state != 'draft'"/>
+                            <field name="opening_date" readonly="state != 'draft'"/>
                         </group>
                         <group>
+<!--
                             <field name="purchase_order_reference" widget="many2many_tags"/>
+-->
+<!--
                             <field name="reception_reference" widget="many2many_tags"/>
+-->
                             <field name="etd" placeholder="Estimated Time of Departure"/>
                             <field name="eta" placeholder="Estimated Time of Arrival"/>
                             <field name="company_id"/>
@@ -73,8 +91,8 @@
                             <field name="matrix_ids" widget="x2many_2d_matrix" field_x_axis="title" field_y_axis="product_name" field_value="value">
                                 <tree>
                                     <field name="product_name"/>
-                                <field name="title"/>
-                                <field name="value"/>
+                                    <field name="title"/>
+                                    <field name="value"/>
                                 </tree>
                             </field>
 

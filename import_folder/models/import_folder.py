@@ -1,4 +1,5 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
 
 
 class ImportFolder(models.Model):
@@ -11,8 +12,7 @@ class ImportFolder(models.Model):
     port_of_embarkation = fields.Many2one('import.port', string="Port of Embarkation")
     shipping_company = fields.Char(string="Shipping Company")
     opening_date = fields.Date(string="Opening Date")
-    purchase_order_reference = fields.Many2many('purchase.order', string="Purchase Order Reference")
-    reception_reference = fields.Many2many('stock.picking', string="Reception Reference")
+    #reception_ids = fields.Many2many('stock.picking', string="Reception Reference", related="purchase_order_ids.picking_ids", store=True)
     etd = fields.Date(string="Estimated Time of Departure (ETD)")
     eta = fields.Date(string="Estimated Time of Arrival (ETA)")
     state = fields.Selection([
@@ -54,6 +54,26 @@ class ImportFolder(models.Model):
         comodel_name='landed.cost.matrix',
         string='Matrix')
 
+    count_reception = fields.Integer(
+        string=' count_reception',
+        compute="compute_count_reception",
+        required=False)
+
+    count_purchases = fields.Integer(
+        string='Count_purchases',
+        compute="compute_count_purchases",
+        required=False)
+
+    def unlink(self):
+        for record in self:
+            if record.state != 'draft':
+                raise ValidationError(_("You can not delete a confirmed folder"))
+        return super().unlink()
+
+    def button_confirm(self):
+        for record in self:
+            record.state = 'in_progress'
+
     def action_view_landed_costs(self):
         self.ensure_one()
         action = self.env["ir.actions.actions"]._for_xml_id("stock_landed_costs.action_stock_landed_cost")
@@ -61,6 +81,34 @@ class ImportFolder(models.Model):
         context = dict(self.env.context, default_import_folder_id=self.id)
         views = [(self.env.ref('stock_landed_costs.view_stock_landed_cost_tree2').id, 'tree'), (False, 'form'), (False, 'kanban')]
         return dict(action, domain=domain, context=context, views=views)
+
+    def compute_count_reception(self):
+        for record in self:
+            record.count_reception = len(record.purchase_order_ids.picking_ids)
+
+    def compute_count_purchases(self):
+        for record in self:
+            record.count_purchases = len(record.purchase_order_ids)
+
+    def action_view_receptions(self):
+        return {
+            'name': 'Receptions',
+            'type': 'ir.actions.act_window',
+            'res_model': 'stock.picking',
+            'view_mode': 'tree,form',
+            'context': {'create': False},
+            'domain': [('id', 'in', self.purchase_order_ids.picking_ids.ids)],
+        }
+
+    def action_view_purchases(self):
+        return {
+            'name': 'Purchases',
+            'type': 'ir.actions.act_window',
+            'res_model': 'purchase.order',
+            'view_mode': 'tree,form',
+            'context': {'create': False},
+            'domain': [('id', 'in', self.purchase_order_ids.ids)],
+        }
 
     @api.depends('purchase_order_ids', 'purchase_order_ids.picking_ids', 'invoice_ids', 'invoice_ids.line_ids', 'invoice_ids.line_ids.is_landed_costs_line')
     def _compute_landed_costs_visible(self):
@@ -92,6 +140,7 @@ class ImportFolder(models.Model):
             if landed_costs:
                 landed_costs.button_validate()
                 record.compute_landed_cost_matrix()
+            record.state = 'closed'
 
     def compute_landed_cost_matrix(self):
         for record in self:
