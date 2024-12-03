@@ -31,5 +31,5 @@
     </record>
 
     <!-- This Menu Item must have a parent and an action -->
-    <menuitem id="import_port_menu" parent="purchase.menu_purchase_config" action="import_port_action" sequence="20"/>
+    <menuitem id="import_port_menu" parent="purchase.menu_purchase_config" action="import_port_action" sequence="20" groups="import_folder.group_import_folder"/>
 </odoo>

@@ -8,9 +8,9 @@
         <field name="arch" type="xml">
             
             <xpath expr="//field[@name='ref']" position="after">
-                <field name="is_import_folder" invisible="move_type != 'in_invoice'"/>
-                <field name="import_folder_id" required="is_import_folder" invisible="not is_import_folder"/>
-                <field name="invoice_import_type" required="is_import_folder" invisible="not is_import_folder"/>
+                <field name="is_import_folder" invisible="move_type != 'in_invoice'" groups="import_folder.group_import_folder"/>
+                <field name="import_folder_id" required="is_import_folder" invisible="not is_import_folder" groups="import_folder.group_import_folder"/>
+                <field name="invoice_import_type" required="is_import_folder" invisible="not is_import_folder" groups="import_folder.group_import_folder"/>
             </xpath>
             
         </field>

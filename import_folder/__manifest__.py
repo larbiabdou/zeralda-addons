@@ -7,6 +7,7 @@
     'depends': ['purchase', 'stock_landed_costs', 'web_widget_x2many_2d_matrix'],
     'data': [
         'security/ir.model.access.csv',
+        'security/import_folder_security.xml',
         'views/import_folder_views.xml',
         'views/import_port_views.xml',
         'views/purchase_order_views.xml',
