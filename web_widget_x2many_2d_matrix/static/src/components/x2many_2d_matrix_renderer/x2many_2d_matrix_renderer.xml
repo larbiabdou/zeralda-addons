@@ -31,25 +31,10 @@
                             record="getValueFieldProps(column.value, row.value).record"
                         />
                     </td>
-                    <td
-                        t-if="props.showRowTotals and _canAggregate()"
-                        class="row-total"
-                    >
-                        <span t-esc="_aggregateRow(row.value)" />
-                    </td>
+
                 </tr>
             </tbody>
-            <tfoot>
-                <tr t-if="props.showColumnTotals and _canAggregate()">
-                    <th />
-                    <th t-foreach="columns" t-as="column" t-key="column.value">
-                        <span t-esc="_aggregateColumn(column.value)" />
-                    </th>
-                    <th t-if="props.showRowTotals" class="col-total">
-                        <span t-esc="_aggregateAll()" />
-                    </th>
-                </tr>
-            </tfoot>
+
         </table>
         <div t-else="" class="alert alert-info">
             Nothing to display.
