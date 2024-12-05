@@ -6,13 +6,31 @@
         <field name="model">account.move</field>
         <field name="inherit_id" ref="account.view_move_form"/>
         <field name="arch" type="xml">
-            
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button string="Facture Transitaire" type="object"
+                        name="open_invoice_transit"
+                        class="oe_stat_button" icon="fa-list"
+                        groups="import_folder.group_import_folder"
+                        invisible="import_type != 'strange'"/>
+                <button string="Facture Douane" type="object"
+                        name="open_invoice_douane"
+                        class="oe_stat_button" icon="fa-list"
+                        groups="import_folder.group_import_folder"
+                        invisible="import_type != 'strange'"/>
+                <button string="Facture Local" type="object"
+                        name="open_invoice_local"
+                        class="oe_stat_button" icon="fa-list"
+                        groups="import_folder.group_import_folder"
+                        invisible="import_type != 'strange'"/>
+            </xpath>
             <xpath expr="//field[@name='ref']" position="after">
                 <field name="is_import_folder" invisible="move_type != 'in_invoice'" groups="import_folder.group_import_folder"/>
                 <field name="import_folder_id" domain="[('state', '!=', 'closed')]" required="is_import_folder" invisible="not is_import_folder" groups="import_folder.group_import_folder"/>
-                <field name="invoice_import_type" required="is_import_folder" invisible="not is_import_folder" groups="import_folder.group_import_folder"/>
+                <field name="import_type" required="is_import_folder" invisible="1" groups="import_folder.group_import_folder"/>
             </xpath>
-            
+            <xpath expr="//button[@name='button_create_landed_costs']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
         </field>
     </record>
 </odoo>

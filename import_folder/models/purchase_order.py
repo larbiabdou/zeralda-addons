@@ -13,3 +13,11 @@ class PurchaseOrder(models.Model):
         string='Is import folder',
         required=False)
 
+    def _prepare_invoice(self):
+        invoice_vals = super()._prepare_invoice()
+        invoice_vals['is_import_folder'] = self.is_import_folder
+        if self.import_folder_id:
+            invoice_vals['import_folder_id'] = self.import_folder_id.id
+            invoice_vals['import_type'] = 'strange'
+        return invoice_vals
+

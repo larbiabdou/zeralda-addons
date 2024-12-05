@@ -9,3 +9,9 @@ class StockLandedCost(models.Model):
         string='Import_folder_id',
         required=False)
 
+    def button_validate(self):
+        res = super().button_validate()
+        for record in self:
+            if record.import_folder_id:
+                record.import_folder_id.compute_landed_cost_matrix()
+        return res

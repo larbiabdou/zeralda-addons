@@ -64,6 +64,22 @@ class ImportFolder(models.Model):
         compute="compute_count_purchases",
         required=False)
 
+    count_douane_invoice = fields.Integer(
+        string='Count_douane_invoice',
+        compute="compute_count_douane_invoice",
+        required=False)
+    count_transit_invoice = fields.Integer(
+        string='Count_douane_invoice',
+        compute="compute_count_transit_invoice",
+        required=False)
+    count_local_invoice = fields.Integer(
+        string='Count_douane_invoice',
+        compute="compute_count_local_invoice",
+        required=False)
+    count_strange_invoice = fields.Integer(
+        string='Count_douane_invoice',
+        compute="compute_count_strange_invoice",
+        required=False)
     def unlink(self):
         for record in self:
             if record.state != 'draft':
@@ -109,7 +125,79 @@ class ImportFolder(models.Model):
             'context': {'create': False},
             'domain': [('id', 'in', self.purchase_order_ids.ids)],
         }
-
+    def compute_count_douane_invoice(self):
+        for record in self:
+            record.count_douane_invoice = self.env['account.move'].search_count([('import_type', '=', 'douane'),
+                       ('is_import_folder', '=', True),
+                       ('import_folder_id', '=', self.id)])
+    def compute_count_transit_invoice(self):
+        for record in self:
+            record.count_transit_invoice = self.env['account.move'].search_count([('import_type', '=', 'transit'),
+                       ('is_import_folder', '=', True),
+                       ('import_folder_id', '=', self.id)])
+    def compute_count_local_invoice(self):
+        for record in self:
+            record.count_local_invoice = self.env['account.move'].search_count([('import_type', '=', 'local'),
+                       ('is_import_folder', '=', True),
+                       ('import_folder_id', '=', self.id)])
+    def compute_count_strange_invoice(self):
+        for record in self:
+            record.count_strange_invoice = self.env['account.move'].search_count([('import_type', '=', 'strange'),
+                       ('is_import_folder', '=', True),
+                       ('import_folder_id', '=', self.id)])
+    def open_invoice_transit(self):
+        return {
+            'name': 'Invoice',
+            'type': 'ir.actions.act_window',
+            'res_model': 'account.move',
+            'view_mode': 'tree,form',
+            'context': {'default_import_type': 'transit',
+                        'default_is_import_folder': True,
+                        'default_import_folder_id': self.id,
+                        'default_move_type': 'in_invoice'},
+            'domain': [('import_type', '=', 'transit'),
+                       ('is_import_folder', '=', True),
+                       ('import_folder_id', '=', self.id)],
+        }
+    def open_invoice_douane(self):
+        return {
+            'name': 'Invoice',
+            'type': 'ir.actions.act_window',
+            'res_model': 'account.move',
+            'view_mode': 'tree,form',
+            'context': {'default_import_type': 'douane',
+                        'default_is_import_folder': True,
+                        'default_import_folder_id': self.id,
+                        'default_move_type': 'in_invoice'},
+            'domain': [('import_type', '=', 'douane'),
+                       ('is_import_folder', '=', True),
+                       ('import_folder_id', '=', self.id)],
+        }
+    def open_invoice_local(self):
+        return {
+            'name': 'Invoice',
+            'type': 'ir.actions.act_window',
+            'res_model': 'account.move',
+            'view_mode': 'tree,form',
+            'context': {'default_import_type': 'local',
+                        'default_is_import_folder': True,
+                        'default_import_folder_id': self.id,
+                        'default_move_type': 'in_invoice'},
+            'domain': [('import_type', '=', 'local'),
+                       ('is_import_folder', '=', True),
+                       ('import_folder_id', '=', self.id)],
+        }
+    def open_invoice_strange(self):
+        return {
+            'name': 'Invoice',
+            'type': 'ir.actions.act_window',
+            'res_model': 'account.move',
+            'view_mode': 'tree,form',
+            'context': {'create': False},
+            'domain': [('import_type', '=', 'strange'),
+                       ('is_import_folder', '=', True),
+                       ('import_folder_id', '=', self.id)],
+        }
     @api.depends('purchase_order_ids', 'purchase_order_ids.picking_ids', 'invoice_ids', 'invoice_ids.line_ids', 'invoice_ids.line_ids.is_landed_costs_line')
     def _compute_landed_costs_visible(self):
         for record in self:
@@ -137,9 +225,9 @@ class ImportFolder(models.Model):
                     'split_method': l.product_id.split_method_landed_cost or 'equal',
                 }) for l in landed_costs_lines],
             })
-            if landed_costs:
-                landed_costs.button_validate()
-                record.compute_landed_cost_matrix()
+            #if landed_costs:
+                #landed_costs.button_validate()
+                #record.compute_landed_cost_matrix()
             record.state = 'closed'
 
     def compute_landed_cost_matrix(self):

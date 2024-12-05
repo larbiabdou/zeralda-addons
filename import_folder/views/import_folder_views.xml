@@ -33,17 +33,45 @@
                                 name="action_view_landed_costs"
                                 class="oe_stat_button" icon="fa-plus-square"
                                 invisible="not landed_costs_ids"/>
-                         <button type="object"
+                        <button type="object"
                                 name="action_view_receptions"
                                 class="oe_stat_button" icon="fa-truck"
                                 invisible="count_reception == 0">
-                             <field name="count_reception" widget="statinfo" string="Receptions"/>
-                         </button>
+                            <field name="count_reception" widget="statinfo" string="Receptions"/>
+                        </button>
                         <button type="object"
                                 name="action_view_purchases"
                                 class="oe_stat_button" icon="fa-shopping-cart"
                                 invisible="count_purchases == 0">
                             <field name="count_purchases" widget="statinfo" string="Purchases"/>
+                        </button>
+                        <button  type="object"
+                                name="open_invoice_transit"
+                                class="oe_stat_button" icon="fa-list"
+                                groups="import_folder.group_import_folder"
+                                >
+                             <field name="count_transit_invoice" widget="statinfo" string="Facture Transitaire"/>
+                        </button>
+                        <button  type="object"
+                                name="open_invoice_local"
+                                class="oe_stat_button" icon="fa-list"
+                                groups="import_folder.group_import_folder"
+                                >
+                             <field name="count_local_invoice" widget="statinfo" string="Facture Local"/>
+                        </button>
+                        <button  type="object"
+                                name="open_invoice_douane"
+                                class="oe_stat_button" icon="fa-list"
+                                groups="import_folder.group_import_folder"
+                                >
+                             <field name="count_douane_invoice" widget="statinfo" string="Facture Douane"/>
+                        </button>
+                        <button  type="object"
+                                name="open_invoice_strange"
+                                class="oe_stat_button" icon="fa-list"
+                                groups="import_folder.group_import_folder"
+                                >
+                             <field name="count_strange_invoice" widget="statinfo" string="Facture Etrangère"/>
                         </button>
                     </div>
                     <group>
@@ -55,12 +83,12 @@
                             <field name="opening_date" readonly="state != 'draft'"/>
                         </group>
                         <group>
-<!--
-                            <field name="purchase_order_reference" widget="many2many_tags"/>
--->
-<!--
-                            <field name="reception_reference" widget="many2many_tags"/>
--->
+                            <!--
+                                                        <field name="purchase_order_reference" widget="many2many_tags"/>
+                            -->
+                            <!--
+                                                        <field name="reception_reference" widget="many2many_tags"/>
+                            -->
                             <field name="etd" placeholder="Estimated Time of Departure"/>
                             <field name="eta" placeholder="Estimated Time of Arrival"/>
                             <field name="company_id"/>
@@ -76,7 +104,7 @@
                         <page name="invoices" string="Invoices">
                             <field name="invoice_ids" readonly="1">
                                 <tree>
-                                    <field name="invoice_import_type"/>
+                                    <field name="import_type"/>
                                     <field name="name"/>
                                     <field name="partner_id"/>
                                     <field name="invoice_date"/>
