@@ -242,19 +242,19 @@ class ImportFolder(models.Model):
                     data.append([0, 0, {
                         'product_name': product.name,
                         'value': lines[0].quantity,
-                        'title': 'Quantity'
+                        'title': _('Quantity')
                     }])
                     if purchase_line:
                         unit_price = purchase_line[0].price_unit
                         data.append([0, 0, {
                             'product_name': product.name,
                             'value': unit_price,
-                            'title': 'Purchase price'
+                            'title': _('Purchase price in %s' % purchase_line[0].currency_id.name)
                         }])
                     data.append([0, 0, {
                         'product_name': product.name,
                         'value': lines[0].former_cost / lines[0].quantity,
-                        'title': 'Converted price'
+                        'title': _('Converted price in %s' % lines[0].currency_id.name)
                     }])
                     total_cost = 0
                     for line in lines:
@@ -262,13 +262,13 @@ class ImportFolder(models.Model):
                     data.append([0, 0, {
                         'product_name': product.name,
                         'value': total_cost,
-                        'title': 'Total Cost'
+                        'title': _('Total Cost in %s' % line[0].currency_id.name)
                     }])
                     final_cost = (lines[0].former_cost / lines[0].quantity) + total_cost
                     data.append([0, 0, {
                         'product_name': product.name,
                         'value': final_cost,
-                        'title': 'Final cost'
+                        'title': _('Final cost in %s' % line[0].currency_id.name)
                     }])
             record.matrix_ids = data
 
