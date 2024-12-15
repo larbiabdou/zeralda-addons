@@ -15,3 +15,6 @@ class StockLandedCost(models.Model):
             if record.import_folder_id:
                 record.import_folder_id.compute_landed_cost_matrix()
         return res
+
+    def _get_targeted_move_ids(self):
+        return self.picking_ids.move_ids.filtered(lambda l: l.product_id.gender != 'male')

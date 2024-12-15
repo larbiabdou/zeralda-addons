@@ -12,6 +12,7 @@
         'views/import_port_views.xml',
         'views/purchase_order_views.xml',
         'views/account_move_views.xml',
+        'views/product_views.xml',
     ],
     'installable': True,
     'auto_install': False,
