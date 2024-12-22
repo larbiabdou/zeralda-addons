@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- This Menu Item will appear in the Upper bar, That's why It needs NO parent or action -->
+    <menuitem id="chick_production_root" name="Chicken Production" sequence="0"/>
+    <menuitem id="menu_chick_configuration" name="Configuration" sequence="10" parent="chick_production_root"/>
+    <menuitem id="submenu_chick_configuration" name="Chick Configuration" parent="menu_chick_configuration" action="action_chick_configuration" sequence="10" />
+    <menuitem id="menu_chicken_building_config"
+              name="Building"
+              parent="menu_chick_configuration"
+              action="action_chicken_building"
+              sequence="10" />
+    <!-- Menu Item -->
+    <menuitem id="menu_phase_management_config"
+              name="Phase Management"
+              parent="menu_chick_configuration"
+              sequence="20"
+              action="action_production_phase" />
+    <menuitem id="menu_chick_production" name="Chick Production" parent="chick_production_root" action="chicken_production.action_chick_production" sequence="1" />
+</odoo>

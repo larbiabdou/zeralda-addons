@@ -1,0 +1,52 @@
+<odoo>
+
+    <!-- Action -->
+    <record id="action_chicken_building" model="ir.actions.act_window">
+        <field name="name">Chicken Buildings</field>
+        <field name="res_model">chicken.building</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p>
+                Manage your chicken buildings here.
+            </p>
+        </field>
+    </record>
+
+    <!-- Tree View -->
+    <record id="view_chicken_building_tree" model="ir.ui.view">
+        <field name="name">chicken.building.tree</field>
+        <field name="model">chicken.building</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="building_capacity"/>
+                <field name="building_location"/>
+                <field name="last_inspection_date"/>
+                <field name="stock_location_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_chicken_building_form" model="ir.ui.view">
+        <field name="name">chicken.building.form</field>
+        <field name="model">chicken.building</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="building_capacity"/>
+                            <field name="building_location"/>
+                        </group>
+                        <group>
+                            <field name="last_inspection_date"/>
+                            <field name="stock_location_id" domain="[('usage', '=', 'internal')]"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

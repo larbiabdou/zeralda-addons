@@ -1,0 +1,95 @@
+<odoo>
+
+    <!-- Action -->
+    <record id="action_chick_production" model="ir.actions.act_window">
+        <field name="name">Chick Production</field>
+        <field name="res_model">chick.production</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Tree View -->
+    <record id="view_chick_production_tree" model="ir.ui.view">
+        <field name="name">chick.production.tree</field>
+        <field name="model">chick.production</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="start_date"/>
+                <field name="phase_id"/>
+                <field name="estimated_end_date"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_chick_production_form" model="ir.ui.view">
+        <field name="name">chick.production.form</field>
+        <field name="model">chick.production</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="start_date"/>
+                        <field name="phase_id"/>
+                        <field name="estimated_end_date" readonly="1"/>
+                        <field name="building_id"/>
+                        <field name="day"/>
+                        <field name="week"/>
+                    </group>
+                    <notebook>
+                        <page string="Import Details">
+                            <field name="import_folder"/>
+                            <field name="reception_date" readonly="1"/>
+                        </page>
+                        <page string="Quantities">
+                            <group>
+                                <field name="male_quantity"/>
+                                <field name="female_quantity"/>
+                                <field name="quantity_male_remaining" readonly="1"/>
+                                <field name="quantity_female_remaining" readonly="1"/>
+                                <field name="male_mortality_rate" readonly="1"/>
+                                <field name="female_mortality_rate" readonly="1"/>
+                            </group>
+                        </page>
+                        <page string="Costs">
+                            <group>
+                                <field name="total_cost" readonly="1"/>
+                                <field name="total_male_cost" readonly="1"/>
+                                <field name="total_female_cost" readonly="1"/>
+                                <field name="actual_male_cost" readonly="1"/>
+                                <field name="actual_female_cost" readonly="1"/>
+                            </group>
+                        </page>
+                        <page string="Real Consumption">
+                            <field name="real_consumption_ids" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="quantity_per_unit"/>
+                                    <field name="uom_id" domain="[('category_id', '=', product_category_id)]"/>
+                                    <field name="product_category_id" column_invisible="1"/>
+                                    <field name="total_quantity"/>
+                                    <field name="lot_id" required="tracking != 'none'"/>
+                                    <field name="cost"/>
+                                    <field name="date"/>
+                                    <field name="gender"/>
+                                    <field name="tracking" column_invisible="1"/>
+                                    <field name="is_confirmed" column_invisible="1"/>
+                                    <button string="Confirm Consumptions"
+                                        type="object"
+                                        name="action_confirm_consumption"
+                                            invisible="is_confirmed == True"
+                                        class="btn-primary"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>
