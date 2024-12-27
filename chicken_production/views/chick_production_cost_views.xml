@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vue formulaire -->
+    <record id="view_chick_production_cost_form" model="ir.ui.view">
+        <field name="name">chick.production.cost.form</field>
+        <field name="model">chick.production.cost</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="chick_production_id"/>
+                            <field name="date"/>
+                            <field name="type"/>
+                            <field name="amount"/>
+                        </group>
+                        <group>
+                            <field name="resource"/>
+                            <field name="equipment_id"  invisible="type != 'equipment'"
+                                  />
+                            <field name="product_id"
+                                   invisible="type != 'input'" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vue liste -->
+    <record id="view_chick_production_cost_tree" model="ir.ui.view">
+        <field name="name">chick.production.cost.tree</field>
+        <field name="model">chick.production.cost</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="date"/>
+                <field name="chick_production_id"/>
+                <field name="type"/>
+                <field name="amount" sum="Total"/>
+                <field name="resource"/>
+                <field name="equipment_id"/>
+                <field name="product_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue recherche -->
+    <record id="view_chick_production_cost_search" model="ir.ui.view">
+        <field name="name">chick.production.cost.search</field>
+        <field name="model">chick.production.cost</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="chick_production_id"/>
+                <field name="date"/>
+                <field name="type"/>
+                <field name="resource"/>
+                <field name="equipment_id"/>
+                <field name="product_id"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_by_production" string="Production" context="{'group_by': 'chick_production_id'}"/>
+                    <filter name="group_by_type" string="Type" context="{'group_by': 'type'}"/>
+                    <filter name="group_by_date" string="Date" context="{'group_by': 'date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_chick_production_cost" model="ir.actions.act_window">
+        <field name="name">Coûts de production</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">chick.production.cost</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

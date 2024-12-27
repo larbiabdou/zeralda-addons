@@ -35,6 +35,8 @@
                             <field name="name"/>
                             <field name="code"/>
                             <field name="duration"/>
+                            <field name="consume_product_ids" widget="many2many_tags"/>
+                            <field name="declare_product_ids" widget="many2many_tags"/>
                         </group>
                         <group>
                             <field name="target_temperature"/>
@@ -43,24 +45,6 @@
                             <field name="eggs_production"/>
                         </group>
                     </group>
-                    <notebook>
-                        <page string="Products to Consume">
-                            <field name="consume_product_ids">
-                                <tree editable="bottom">
-                                    <field name="product_id"/>
-                                    <field name="product_uom_id"/>
-                                </tree>
-                            </field>
-                        </page>
-                        <page string="Products to Declare">
-                            <field name="declare_product_ids">
-                                <tree editable="bottom">
-                                    <field name="product_id"/>
-                                    <field name="product_uom_id"/>
-                                </tree>
-                            </field>
-                        </page>
-                    </notebook>
                 </sheet>
             </form>
         </field>

@@ -45,6 +45,30 @@ class ChickProduction(models.Model):
     actual_female_cost = fields.Float(string='Actual female Cost', )
 
     real_consumption_ids = fields.One2many('real.consumption', 'chick_production_id', string="Real Consumption")
+    weight_record_ids = fields.One2many('weight.record', 'chick_production_id', string="Weight Records")
+    product_declaration_ids = fields.One2many(
+        comodel_name='produce.wizard',
+        inverse_name='chick_production_id',
+        string='Declarations',
+        domain=[('type', '=', 'declaration')],
+        required=False)
+    product_loss_ids = fields.One2many(
+        comodel_name='produce.wizard',
+        inverse_name='chick_production_id',
+        string='Loss',
+        domain=[('type', '=', 'loss')],
+        required=False)
+    equipment_ids = fields.One2many(
+        'chick.production.equipment',
+        'production_id',
+        string='Équipements'
+    )
+
+    cost_ids = fields.One2many(
+        comodel_name='chick.production.cost',
+        inverse_name='chick_production_id',
+        string='Costs',
+        required=False)
 
     # State
     state = fields.Selection([
@@ -55,12 +79,42 @@ class ChickProduction(models.Model):
         ('canceled', 'Canceled')
     ], default='draft', string='State')
 
-    @api.depends('real_consumption_ids')
+    def action_loss(self):
+        return {
+            'name': _('Produce'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'produce.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_chick_production_id': self.id,
+                'default_type': 'loss',
+                #'default_domain_product_ids': self.phase_id.consume_product_ids.ids,
+                'default_domain_consumed_product_ids': self.phase_id.consume_product_ids.ids,
+            },
+        }
+
+    def action_produce(self):
+        return {
+            'name': _('Produce'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'produce.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_chick_production_id': self.id,
+                'default_type': 'declaration',
+                'default_domain_product_ids': self.phase_id.declare_product_ids.ids,
+                'default_domain_consumed_product_ids': self.phase_id.consume_product_ids.ids,
+            },
+        }
+
+    @api.depends('cost_ids')
     def compute_total_cost(self):
         for record in self:
-            record.total_male_cost = sum(line.cost for line in record.real_consumption_ids.filtered(lambda l: l.gender == 'male'))
-            record.total_female_cost = sum(line.cost for line in record.real_consumption_ids.filtered(lambda l: l.gender == 'female'))
-            record.total_cost = sum(line.cost for line in record.real_consumption_ids)
+            record.total_male_cost = sum(line.amount for line in record.cost_ids.filtered(lambda l: l.gender == 'male'))
+            record.total_female_cost = sum(line.amount for line in record.cost_ids.filtered(lambda l: l.gender == 'female'))
+            record.total_cost = sum(line.amount for line in record.cost_ids)
 
     @api.depends('total_male_cost', 'male_quantity')
     def compute_unitary_male_cost(self):
@@ -72,7 +126,7 @@ class ChickProduction(models.Model):
         for record in self:
             record.male_unitary_cost = record.total_male_cost / record.male_quantity
 
-    @api.depends('start_date', 'phase_id')
+    @api.depends('start_date', 'phase_id', 'phase_id.duration')
     def _compute_estimated_end_date(self):
         for record in self:
             if record.start_date and record.phase_id.duration:
@@ -83,11 +137,17 @@ class ChickProduction(models.Model):
     #     for record in self:
     #         record.reception_date = max(record.import_folder.mapped('reception_date'), default=False)
 
-    @api.depends('male_quantity', 'female_quantity')
+    @api.depends('male_quantity', 'female_quantity', 'product_declaration_ids')
     def _compute_remaining_quantities(self):
         for record in self:
-            record.quantity_male_remaining = record.male_quantity - self._get_male_losses(record)
-            record.quantity_female_remaining = record.female_quantity - self._get_female_losses(record)
+            record.quantity_male_remaining = record.male_quantity - record._get_male_losses() - record._get_male_declarations()
+            record.quantity_female_remaining = record.female_quantity - record._get_female_losses() - record._get_female_declarations()
+
+    def _get_male_declarations(self):
+        return sum(line.quantity for line in self.product_declaration_ids.filtered(lambda l: l.gender == 'male'))
+
+    def _get_female_declarations(self):
+        return sum(line.quantity for line in self.product_declaration_ids.filtered(lambda l: l.gender == 'female'))
 
     @api.depends('male_quantity', 'female_quantity')
     def _compute_mortality_rates(self):
@@ -108,13 +168,11 @@ class ChickProduction(models.Model):
         sequence = self.env['ir.sequence'].next_by_code('chick.production') or 'CP/0000'
         return sequence
 
-    def _get_male_losses(self, record):
-        """Simulate male losses calculation."""
-        return 0  # Replace with actual logic
+    def _get_male_losses(self):
+        return sum(line.quantity for line in self.product_loss_ids.filtered(lambda l: l.gender == 'male'))
 
-    def _get_female_losses(self, record):
-        """Simulate female losses calculation."""
-        return 0  # Replace with actual logic
+    def _get_female_losses(self):
+        return sum(line.quantity for line in self.product_loss_ids.filtered(lambda l: l.gender == 'female'))
 
     def reset_to_draft(self):
         for record in self:
@@ -223,3 +281,82 @@ class RealConsumption(models.Model):
             })
             pick_output.button_validate()
             record.is_confirmed = True
+            self.env['chick.production.cost'].create({
+                'name': record.product_id.name,
+                'resource': record.product_id.name,
+                'production_id': record.chick_production_id.id,
+                'type': 'input',
+                'gender': record.cost,
+                'amount': record.cost,
+                'product_id': record.product_id.id,
+                'date': record.date,
+            })
+
+class WeightRecord(models.Model):
+    _name = 'weight.record'
+    _description = 'Weight Record'
+
+    chick_production_id = fields.Many2one('chick.production', string="Chick Production", ondelete='cascade')
+    gender_animal = fields.Selection([
+        ('male', 'Male'),
+        ('female', 'Female'),
+    ], string="Gender Animal", required=True)
+    initial_weight = fields.Float(string="Initial Weight")
+    average_current_weight = fields.Float(string="Average Current Weight")
+    date = fields.Date(string="Date", required=True, default=fields.Date.context_today)
+
+from odoo import models, fields, api
+
+class ChickProductionEquipment(models.Model):
+    _name = 'chick.production.equipment'
+    _description = 'Équipements utilisés dans la production'
+
+    production_id = fields.Many2one('chick.production', string='Production', required=True, ondelete='cascade')
+    equipment_id = fields.Many2one('maintenance.equipment', string='Équipement', required=True)
+    duration = fields.Float(string='Durée', required=True)
+    uom_id = fields.Many2one(
+        'uom.uom',
+        string='UdM',
+        domain=lambda self: [('category_id', '=', self.env.ref('uom.uom_categ_wtime').id)],
+        required=True
+    )
+    date = fields.Date(string='Date', required=True)
+    cost = fields.Float(string='Coût', compute='_compute_cost', store=True)
+    is_confirmed = fields.Boolean(
+        string='Is_confirmed',
+        required=False)
+
+    @api.depends('equipment_id', 'duration')
+    def _compute_cost(self):
+        for record in self:
+            if record.equipment_id and record.duration and record.equipment_id.uom_id:
+                cost = record.equipment_id.cost  # Standard price of the product
+                uom_factor = record.uom_id._compute_quantity(1.0, record.equipment_id.uom_id)  # Conversion factor
+                record.cost = cost * record.duration * uom_factor
+            else:
+                record.cost = 0.0
+
+    def button_confirm(self):
+        for record in self:
+            self.env['chick.production.cost'].create({
+                'name': record.equipment_id.name,
+                'resource': record.equipment_id.name,
+                'chick_production_id': record.production_id.id,
+                'type': 'equipment',
+                'amount': record.cost * record.production_id.quantity_male_remaining / (record.production_id.quantity_male_remaining + record.production_id.quantity_female_remaining),
+                'gender': 'male',
+                'equipment_id': record.equipment_id.id,
+                'date': record.date,
+            })
+            self.env['chick.production.cost'].create({
+                'name': record.equipment_id.name,
+                'resource': record.equipment_id.name,
+                'chick_production_id': record.production_id.id,
+                'type': 'equipment',
+                'amount': record.cost * record.production_id.quantity_female_remaining / (record.production_id.quantity_male_remaining + record.production_id.quantity_female_remaining),
+                'gender': 'female',
+                'equipment_id': record.equipment_id.id,
+                'date': record.date,
+            })
+            record.is_confirmed = True
+

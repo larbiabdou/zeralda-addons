@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_produce_wizard_form" model="ir.ui.view">
+        <field name="name">produce.wizard.form</field>
+        <field name="model">produce.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Produce">
+
+                <group>
+                    <field name="state" invisible="1"/>
+                    <field name="type" invisible="1"/>
+                    <field name="chick_production_id" invisible="1"/>
+                    <field name="product_id" invisible="type == 'loss'" domain="[('id', 'in', domain_product_ids)]" readonly="state != 'draft'"/>
+                    <field name="product_to_consume_id" domain="[('id', 'in', domain_consumed_product_ids)]" readonly="state != 'draft'"/>
+                    <field name="quantity" readonly="state != 'draft'"/>
+                    <field name="uom_id" readonly="state != 'draft'"/>
+                    <field name="initial_lot_id" domain="[('id', 'in', domain_lot_ids)]" readonly="state != 'draft'"/>
+                    <field name="domain_lot_ids" widget="many2many_tags" invisible="1"/>
+                    <field name="lot_name" readonly="state != 'draft'" invisible="type == 'loss'"/>
+                    <field name="domain_product_ids" widget="many2many_tags" invisible="1"/>
+                    <field name="domain_consumed_product_ids" widget="many2many_tags" invisible="1"/>
+                    <field name="lot_id" readonly="1" invisible="type == 'loss'"/>
+                    <field name="cost" readonly="1"/>
+                </group>
+                <footer>
+                    <button string="Validate" type="object" name="action_validate_production" class="btn-primary" invisible="state != 'draft'"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

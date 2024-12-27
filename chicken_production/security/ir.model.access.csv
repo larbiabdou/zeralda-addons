@@ -2,8 +2,10 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_chick_configuration_user,access.check.configuration.user,model_chick_configuration,base.group_user,1,1,1,1
 access_chicken_building_user,access.chicken.building.user,model_chicken_building,base.group_user,1,1,1,1
 access_production_phase_user,access.production.phase.user,model_production_phase,base.group_user,1,1,1,1
-access_production_phase_product_consume_user,access.production.phase.product.consume.user,model_production_phase_product_consume,base.group_user,1,1,1,1
-access_production_phase_product_declare_user,access.production.phase.product.declare.user,model_production_phase_product_declare,base.group_user,1,1,1,1
 access_chick_production_user,access.chick.production.user,model_chick_production,base.group_user,1,1,1,1
 access_real_consumption_user,access.real.consumption.user,model_real_consumption,base.group_user,1,1,1,1
+access_weight_record_user,access.weight.record.user,model_weight_record,base.group_user,1,1,1,1
+access_product_wizard_user,access.product.wizard.user,model_produce_wizard,base.group_user,1,1,1,1
+access_chick_production_equipment_user,access.chick.production.equipment.user,model_chick_production_equipment,base.group_user,1,1,1,1
+access_chick_production_cost_user,access.chick.production.cost.user,model_chick_production_cost,base.group_user,1,1,1,1
 

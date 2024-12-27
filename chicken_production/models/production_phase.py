@@ -18,33 +18,32 @@ class ProductionPhase(models.Model):
     eggs_production = fields.Boolean(string='Eggs Production')
 
     # Products to Consume
-    consume_product_ids = fields.One2many(
-        'production.phase.product.consume',
-        'phase_id',
+    consume_product_ids = fields.Many2many(
+        'product.product',
+        relation="consume_product_ids",
         string='Products to Consume'
     )
 
     # Products to Declare
-    declare_product_ids = fields.One2many(
-        'production.phase.product.declare',
-        'phase_id',
+    declare_product_ids = fields.Many2many(
+        'product.product',
+        relation="declare_product_ids",
         string='Products to Declare'
     )
 
-
-class ProductionPhaseProductConsume(models.Model):
-    _name = 'production.phase.product.consume'
-    _description = 'Product to Consume'
-
-    phase_id = fields.Many2one('production.phase', string='Phase', required=True, ondelete='cascade')
-    product_id = fields.Many2one('product.product', string='Product', required=True)
-    product_uom_id = fields.Many2one('uom.uom', string='Unit of Measure', required=True)
-
-
-class ProductionPhaseProductDeclare(models.Model):
-    _name = 'production.phase.product.declare'
-    _description = 'Product to Declare'
-
-    phase_id = fields.Many2one('production.phase', string='Phase', required=True, ondelete='cascade')
-    product_id = fields.Many2one('product.product', string='Product', required=True)
-    product_uom_id = fields.Many2one('uom.uom', string='Unit of Measure', required=True)
+# class ProductionPhaseProductConsume(models.Model):
+#     _name = 'production.phase.product.consume'
+#     _description = 'Product to Consume'
+#
+#     phase_id = fields.Many2one('production.phase', string='Phase', required=True, ondelete='cascade')
+#     product_id = fields.Many2one('product.product', string='Product', required=True)
+#     product_uom_id = fields.Many2one('uom.uom', string='Unit of Measure', required=True)
+#
+#
+# class ProductionPhaseProductDeclare(models.Model):
+#     _name = 'production.phase.product.declare'
+#     _description = 'Product to Declare'
+#
+#     phase_id = fields.Many2one('production.phase', string='Phase', required=True, ondelete='cascade')
+#     product_id = fields.Many2one('product.product', string='Product', required=True)
+#     product_uom_id = fields.Many2one('uom.uom', string='Unit of Measure', required=True)
