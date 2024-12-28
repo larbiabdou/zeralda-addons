@@ -29,26 +29,37 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_produce" type="object" string="Produce"/>
-                    <button name="action_loss" type="object" string="Loss"/>
+                    <button name="action_produce" type="object" string="Produce" invisible="state != 'in_progress'"/>
+                    <button name="action_loss" type="object" string="Loss" invisible="state != 'in_progress'"/>
+                    <button name="action_confirm" type="object" string="Confirm"
+                            invisible="state != 'draft'" class="btn-primary"/>
+                    <button name="action_start_progress" type="object" string="Start Progress"
+                            invisible="state != 'confirmed'" class="btn-secondary"/>
+                    <button name="action_complete" type="object" string="Complete"
+                            invisible="state != 'in_progress'" class="btn-success"/>
+                    <button name="action_cancel" type="object" string="Cancel"
+                            invisible="state not in ['draft','confirmed','in_progress']" class="btn-danger"/>
+                    <button name="action_reset_to_draft" type="object" string="Reset to Draft"
+                            invisible="state not in ['canceled','completed']" class="btn-secondary"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
                     <group>
                         <group>
-                            <field name="name"/>
-                            <field name="start_date"/>
-                            <field name="phase_id"/>
+                            <field name="name" readonly="state != 'draft'"/>
+                            <field name="start_date" readonly="state != 'draft'"/>
+                            <field name="end_date" readonly="state not in ['draft', 'confirmed', 'in_progress']"/>
+                            <field name="phase_id" readonly="state != 'draft'"/>
                             <field name="estimated_end_date" readonly="1"/>
-                            <field name="building_id"/>
+                            <field name="building_id" readonly="state != 'draft'"/>
                             <field name="day"/>
                             <field name="week"/>
                         </group>
                         <group>
-                            <field name="import_folder"/>
+                            <field name="import_folder" readonly="state != 'draft'"/>
                             <field name="reception_date" invisible="1"/>
-                            <field name="male_quantity"/>
-                            <field name="female_quantity"/>
+                            <field name="male_quantity" readonly="state != 'draft'"/>
+                            <field name="female_quantity" readonly="state != 'draft'"/>
                             <field name="quantity_male_remaining" readonly="1"/>
                             <field name="quantity_female_remaining" readonly="1"/>
                             <field name="male_mortality_rate" readonly="1"/>
@@ -57,7 +68,7 @@
                     </group>
                     <notebook>
                         <page string="Real Consumption">
-                            <field name="real_consumption_ids" nolabel="1">
+                            <field name="real_consumption_ids" nolabel="1" readonly="state != 'in_progress'">
                                 <tree editable="bottom">
                                     <field name="product_id"/>
                                     <field name="quantity_per_unit"/>
@@ -79,7 +90,7 @@
                             </field>
                         </page>
                         <page string="Équipements" name="equipments">
-                            <field name="equipment_ids">
+                            <field name="equipment_ids" readonly="state != 'in_progress'">
                                 <tree editable="bottom">
                                     <field name="equipment_id"/>
                                     <field name="duration"/>
@@ -97,7 +108,7 @@
                             </field>
                         </page>
                         <page string="Weight">
-                            <field name="weight_record_ids">
+                            <field name="weight_record_ids" readonly="state != 'in_progress'">
                                 <tree editable="bottom">
                                     <field name="gender_animal" required="1"/>
                                     <field name="initial_weight"/>
@@ -111,10 +122,10 @@
                                 <field name="total_cost" readonly="1"/>
                                 <field name="total_male_cost" readonly="1"/>
                                 <field name="total_female_cost" readonly="1"/>
-                                <field name="actual_male_cost" readonly="1"/>
-                                <field name="actual_female_cost" readonly="1"/>
+                                <field name="male_unitary_cost" readonly="1"/>
+                                <field name="female_unitary_cost" readonly="1"/>
                             </group>
-                            <field name="cost_ids">
+                            <field name="cost_ids" readonly="state != 'in_progress'">
                                 <tree>
                                     <field name="type"/>
                                     <field name="name"/>
@@ -125,7 +136,7 @@
                             </field>
                         </page>
                         <page string="Declaration">
-                            <field name="product_declaration_ids">
+                            <field name="product_declaration_ids" readonly="state != 'in_progress'">
                                 <tree create="0">
                                     <field name="product_id"/>
                                     <field name="product_to_consume_id"/>
@@ -138,7 +149,7 @@
                             </field>
                         </page>
                         <page string="Loss">
-                            <field name="product_loss_ids">
+                            <field name="product_loss_ids" readonly="state != 'in_progress'">
                                 <tree create="0">
                                     <field name="product_to_consume_id"/>
                                     <field name="quantity"/>

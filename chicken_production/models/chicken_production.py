@@ -1,5 +1,5 @@
 from odoo import models, fields, api, _
-from datetime import timedelta
+from datetime import timedelta, date
 
 from odoo.exceptions import ValidationError
 
@@ -13,16 +13,18 @@ class ChickProduction(models.Model):
     start_date = fields.Date(string='Start Date', required=True)
     phase_id = fields.Many2one('production.phase', string='Phase', required=True)
     estimated_end_date = fields.Date(string='Estimated End Date', compute='_compute_estimated_end_date', store=True)
-
+    end_date = fields.Date(
+        string='End date',
+        required=False)
     # Import Folder and Reception Details
     import_folder = fields.Many2one('import.folder', string='Import Folder')
     reception_date = fields.Date(string='Reception Date', store=True)
 
     # Male and Female Quantities and Costs
     male_quantity = fields.Float(string='Male Quantity', )
-    male_unitary_cost = fields.Float(string='Male Unitary Cost', )
+    male_unitary_cost = fields.Float(string='Male Unitary Cost', compute="compute_unitary_male_cost", store=True)
     female_quantity = fields.Float(string='female Quantity', )
-    female_unitary_cost = fields.Float(string='female Unitary Cost', )
+    female_unitary_cost = fields.Float(string='female Unitary Cost', compute="compute_unitary_female_cost", store=True)
 
     # Remaining Quantities
     quantity_male_remaining = fields.Float(string='Quantity Male Remaining', compute='_compute_remaining_quantities', store=True)
@@ -34,15 +36,15 @@ class ChickProduction(models.Model):
 
     # Building and Day/Week
     building_id = fields.Many2one('chicken.building', string='Building')
-    day = fields.Integer(string='Day', default=1)
-    week = fields.Integer(string='Week', compute='_compute_week', store=True)
+    day = fields.Integer(string='Day', compute="_compute_day")
+    week = fields.Integer(string='Week', compute='_compute_day')
 
     # Costs
     total_cost = fields.Float(string='Total Cost', compute='compute_total_cost', store=True)
     total_male_cost = fields.Float(string='Total Male Cost', compute='compute_total_cost', store=True)
     total_female_cost = fields.Float(string='Total female Cost', compute='compute_total_cost', store=True)
-    actual_male_cost = fields.Float(string='Actual Male Cost', )
-    actual_female_cost = fields.Float(string='Actual female Cost', )
+    actual_male_cost = fields.Float(string='Actual Male Cost', compute="compute_actual_male_cost")
+    actual_female_cost = fields.Float(string='Actual female Cost', compute="compute_actual_female_cost")
 
     real_consumption_ids = fields.One2many('real.consumption', 'chick_production_id', string="Real Consumption")
     weight_record_ids = fields.One2many('weight.record', 'chick_production_id', string="Weight Records")
@@ -78,6 +80,26 @@ class ChickProduction(models.Model):
         ('completed', 'Completed'),
         ('canceled', 'Canceled')
     ], default='draft', string='State')
+
+    def action_confirm(self):
+        for record in self:
+            record.state = 'confirmed'
+
+    def action_start_progress(self):
+        for record in self:
+            record.state = 'in_progress'
+
+    def action_complete(self):
+        for record in self:
+            record.state = 'completed'
+
+    def action_cancel(self):
+        for record in self:
+            record.state = 'canceled'
+
+    def action_reset_to_draft(self):
+        for record in self:
+            record.state = 'draft'
 
     def action_loss(self):
         return {
@@ -116,15 +138,15 @@ class ChickProduction(models.Model):
             record.total_female_cost = sum(line.amount for line in record.cost_ids.filtered(lambda l: l.gender == 'female'))
             record.total_cost = sum(line.amount for line in record.cost_ids)
 
-    @api.depends('total_male_cost', 'male_quantity')
+    @api.depends('total_male_cost', 'quantity_male_remaining')
     def compute_unitary_male_cost(self):
         for record in self:
-            record.male_unitary_cost = record.total_male_cost / record.male_quantity
+            record.male_unitary_cost = record.total_male_cost / record.quantity_male_remaining
 
-    @api.depends('total_male_cost', 'male_quantity')
-    def compute_unitary_male_cost(self):
+    @api.depends('total_female_cost', 'quantity_female_remaining')
+    def compute_unitary_female_cost(self):
         for record in self:
-            record.male_unitary_cost = record.total_male_cost / record.male_quantity
+            record.female_unitary_cost = record.total_female_cost / record.quantity_female_remaining
 
     @api.depends('start_date', 'phase_id', 'phase_id.duration')
     def _compute_estimated_end_date(self):
@@ -137,11 +159,11 @@ class ChickProduction(models.Model):
     #     for record in self:
     #         record.reception_date = max(record.import_folder.mapped('reception_date'), default=False)
 
-    @api.depends('male_quantity', 'female_quantity', 'product_declaration_ids')
+    @api.depends('male_quantity', 'female_quantity', 'product_loss_ids')
     def _compute_remaining_quantities(self):
         for record in self:
-            record.quantity_male_remaining = record.male_quantity - record._get_male_losses() - record._get_male_declarations()
-            record.quantity_female_remaining = record.female_quantity - record._get_female_losses() - record._get_female_declarations()
+            record.quantity_male_remaining = record.male_quantity - record._get_male_losses()
+            record.quantity_female_remaining = record.female_quantity - record._get_female_losses()
 
     def _get_male_declarations(self):
         return sum(line.quantity for line in self.product_declaration_ids.filtered(lambda l: l.gender == 'male'))
@@ -159,10 +181,17 @@ class ChickProduction(models.Model):
                 self._get_female_losses(record) / record.female_quantity * 100 if record.female_quantity else 0
             )
 
-    @api.depends('day')
-    def _compute_week(self):
+    def _compute_day(self):
         for record in self:
-            record.week = (record.day // 7) + 1
+            if record.start_date:
+                today = date.today()
+                delta = today - record.start_date
+                record.day = delta.days
+                record.week = (record.day // 7) + 1
+            else:
+                record.day = 0
+                record.week = 0
+
 
     def _generate_name(self):
         sequence = self.env['ir.sequence'].next_by_code('chick.production') or 'CP/0000'
@@ -284,9 +313,9 @@ class RealConsumption(models.Model):
             self.env['chick.production.cost'].create({
                 'name': record.product_id.name,
                 'resource': record.product_id.name,
-                'production_id': record.chick_production_id.id,
+                'chick_production_id': record.chick_production_id.id,
                 'type': 'input',
-                'gender': record.cost,
+                'gender': record.gender,
                 'amount': record.cost,
                 'product_id': record.product_id.id,
                 'date': record.date,
