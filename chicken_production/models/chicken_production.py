@@ -175,10 +175,10 @@ class ChickProduction(models.Model):
     def _compute_mortality_rates(self):
         for record in self:
             record.male_mortality_rate = (
-                self._get_male_losses(record) / record.male_quantity * 100 if record.male_quantity else 0
+                self._get_male_losses() / record.male_quantity * 100 if record.male_quantity else 0
             )
             record.female_mortality_rate = (
-                self._get_female_losses(record) / record.female_quantity * 100 if record.female_quantity else 0
+                self._get_female_losses() / record.female_quantity * 100 if record.female_quantity else 0
             )
 
     def _compute_day(self):
