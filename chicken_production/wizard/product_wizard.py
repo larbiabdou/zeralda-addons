@@ -81,25 +81,35 @@ class ProduceWizard(models.Model):
                     'picking_type_id': self.env.ref('stock.picking_type_out').id,
                     'location_id': location_production.id,
                     'location_dest_id': record.chick_production_id.building_id.stock_location_id.id,
-                    'move_ids': [(0, 0, {
-                        'name': record.product_id.name,
+                })
+                move_id = self.env['stock.move'].create({
+                    'picking_id': declaration_picking.id,
+                    'name': record.product_id.name,
+                    'product_id': record.product_id.id,
+                    'product_uom_qty': record.quantity,
+                    'product_uom': record.uom_id.id,
+                    'price_unit': record.chick_production_id.male_unitary_cost if record.product_id.gender == 'male' else record.chick_production_id.female_unitary_cost,
+                    'location_id': location_production.id,
+                    'location_dest_id': record.chick_production_id.building_id.stock_location_id.id,
+                    'quantity': record.quantity,
+                    'move_line_ids': [(0, 0, {
                         'product_id': record.product_id.id,
-                        'product_uom_qty': record.quantity,
-                        'product_uom': record.uom_id.id,
+                        'product_uom_id': record.uom_id.id,
+                        'quantity': record.quantity,
                         'location_id': location_production.id,
                         'location_dest_id': record.chick_production_id.building_id.stock_location_id.id,
-                        'quantity': record.quantity,
-                        'move_line_ids': [(0, 0, {
-                            'product_id': record.product_id.id,
-                            'product_uom_id': record.uom_id.id,
-                            'quantity': record.quantity,
-                            'location_id': location_production.id,
-                            'location_dest_id': record.chick_production_id.building_id.stock_location_id.id,
-                            'lot_id': record.lot_id.id if record.lot_id else False,
-                        })]
-                    })],
+                        'lot_id': record.lot_id.id if record.lot_id else False,
+                    })]
                 })
+                # valuation_layer = self.env['stock.valuation.layer'].create({
+                #     'product_id': record.product_id.id,
+                #     'value': record.chick_production_id.male_unitary_cost if record.product_id.gender == 'male' else record.chick_production_id.female_unitary_cost,
+                #     'quantity': record.quantity,
+                #     'stock_move_id': move_id.id,
+                #     'company_id': self.env.company.id,
+                # })
                 declaration_picking.button_validate()
+                #move_id.stock_valuation_layer_ids.unit_cost = record.chick_production_id.male_unitary_cost if record.product_id.gender == 'male' else record.chick_production_id.female_unitary_cost
 
             consumption_picking = self.env['stock.picking'].create({
                 'partner_id': False,
