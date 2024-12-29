@@ -141,12 +141,12 @@ class ChickProduction(models.Model):
     @api.depends('total_male_cost', 'quantity_male_remaining')
     def compute_unitary_male_cost(self):
         for record in self:
-            record.male_unitary_cost = record.total_male_cost / record.quantity_male_remaining
+            record.male_unitary_cost = record.total_male_cost / record.quantity_male_remaining if record.quantity_male_remaining != 0 else 0
 
     @api.depends('total_female_cost', 'quantity_female_remaining')
     def compute_unitary_female_cost(self):
         for record in self:
-            record.female_unitary_cost = record.total_female_cost / record.quantity_female_remaining
+            record.female_unitary_cost = record.total_female_cost / record.quantity_female_remaining if record.quantity_female_remaining != 0 else 0
 
     @api.depends('start_date', 'phase_id', 'phase_id.duration')
     def _compute_estimated_end_date(self):
