@@ -9,10 +9,11 @@ class ChickProductionCost(models.Model):
         required=False)
 
     chick_production_id = fields.Many2one('chick.production', string='Production', required=True)
-    date = fields.Date(string='Date', required=True)
+    date = fields.Date(string='Date')
     type = fields.Selection([
         ('input', 'Intrant'),
-        ('equipment', 'Équipement')
+        ('equipment', 'Équipement'),
+        ('reception', 'Reception')
     ], string='Type', required=True)
     amount = fields.Float(string='Montant', digits='Product Price')
     resource = fields.Char(string='Ressource')

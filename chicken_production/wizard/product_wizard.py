@@ -21,7 +21,7 @@ class ProduceWizard(models.Model):
     lot_name = fields.Char(string="Lot")
     lot_id = fields.Many2one('stock.lot', string="Lot")
     initial_lot_id = fields.Many2one('stock.lot', string="Initial Lot")
-    cost = fields.Float(string="Cost", compute="_compute_cost", store=True)
+    cost = fields.Float(string="Cost")
     domain_lot_ids = fields.Many2many(
         comodel_name='stock.lot',
         compute='compute_domain_lot_ids',
@@ -57,12 +57,6 @@ class ProduceWizard(models.Model):
                 False
             if lines:
                 record.domain_lot_ids = lines.lot_id.ids
-
-    @api.depends('product_id', 'quantity')
-    def _compute_cost(self):
-        for record in self:
-            if record.product_id and record.quantity:
-                record.cost = record.product_id.standard_price * record.quantity
 
     def action_validate_production(self):
         location_production = self.env['stock.location'].search([('usage', '=', 'production')])
@@ -101,15 +95,10 @@ class ProduceWizard(models.Model):
                         'lot_id': record.lot_id.id if record.lot_id else False,
                     })]
                 })
-                # valuation_layer = self.env['stock.valuation.layer'].create({
-                #     'product_id': record.product_id.id,
-                #     'value': record.chick_production_id.male_unitary_cost if record.product_id.gender == 'male' else record.chick_production_id.female_unitary_cost,
-                #     'quantity': record.quantity,
-                #     'stock_move_id': move_id.id,
-                #     'company_id': self.env.company.id,
-                # })
+                record.cost = sum(line.value for line in declaration_picking.move_ids.stock_valuation_layer_ids.filtered(
+                    lambda l: l.product_id == record.product_id))
+
                 declaration_picking.button_validate()
-                #move_id.stock_valuation_layer_ids.unit_cost = record.chick_production_id.male_unitary_cost if record.product_id.gender == 'male' else record.chick_production_id.female_unitary_cost
 
             consumption_picking = self.env['stock.picking'].create({
                 'partner_id': False,

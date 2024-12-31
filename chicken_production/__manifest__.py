@@ -13,6 +13,7 @@
         'views/chicken_production_views.xml',
         'views/maintenance_equipment_views.xml',
         'wizard/product_wizard_views.xml',
+        'views/real_consumption_viiews.xml',
         'views/menu_views.xml',
     ],
     'installable': True,

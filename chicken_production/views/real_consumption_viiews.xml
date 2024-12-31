@@ -1,0 +1,74 @@
+<odoo>
+    <!-- List View -->
+    <record id="view_chick_production_line_tree" model="ir.ui.view">
+        <field name="name">real.consumption.tree</field>
+        <field name="model">real.consumption</field>
+        <field name="arch" type="xml">
+            <tree string="Chick Production Line">
+                <field name="product_id"/>
+                <field name="quantity_per_unit"/>
+                <field name="uom_id"/>
+                <field name="total_quantity"/>
+                <field name="lot_id"/>
+                <field name="cost"/>
+                <field name="date"/>
+                <field name="gender"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_chick_production_line_form" model="ir.ui.view">
+        <field name="name">real.consumption.form</field>
+        <field name="model">real.consumption</field>
+        <field name="arch" type="xml">
+            <form string="Chick Production Line">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="product_id"/>
+                            <field name="quantity_per_unit"/>
+                            <field name="uom_id"/>
+                            <field name="total_quantity"/>
+                        </group>
+                        <group>
+                            <field name="lot_id"/>
+                            <field name="cost"/>
+                            <field name="date"/>
+                            <field name="gender"/>
+                            <field name="is_confirmed"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="view_chick_production_line_search" model="ir.ui.view">
+        <field name="name">real.consumption.search</field>
+        <field name="model">real.consumption</field>
+        <field name="arch" type="xml">
+            <search string="Search Chick Production Lines">
+                <!-- Group By -->
+                <group expand="0" string="Group By">
+                    <filter name="group_by_gender" string="Gender" context="{'group_by': 'gender'}"/>
+                </group>
+                
+                <!-- Filters -->
+                <filter name="filter_male" string="Male" domain="[('gender', '=', 'male')]"/>
+                <filter name="filter_female" string="Female" domain="[('gender', '=', 'female')]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_chick_production_line" model="ir.actions.act_window">
+        <field name="name">Chick Production Lines</field>
+        <field name="res_model">real.consumption</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p>
+                Create and manage your chick production lines here.
+            </p>
+        </field>
+    </record>
+</odoo>

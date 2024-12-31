@@ -84,6 +84,26 @@ class ChickProduction(models.Model):
     def action_confirm(self):
         for record in self:
             record.state = 'confirmed'
+            male_reception_cost = sum(line.value for line in record.import_folder.purchase_order_ids.picking_ids.move_ids.stock_valuation_layer_ids.filtered(
+                lambda l: l.product_id.gender == 'male'))
+            female_reception_cost = sum(line.value for line in record.import_folder.purchase_order_ids.picking_ids.move_ids.stock_valuation_layer_ids.filtered(
+                lambda l: l.product_id.gender == 'female'))
+            self.env['chick.production.cost'].create({
+                'name': 'Male reception cost',
+                'chick_production_id': record.id,
+                'type': 'reception',
+                'gender': 'male',
+                'amount': male_reception_cost,
+                #'date': record.date,
+            })
+            self.env['chick.production.cost'].create({
+                'name': 'Female reception cost',
+                'chick_production_id': record.id,
+                'type': 'reception',
+                'gender': 'female',
+                'amount': female_reception_cost,
+                #'date': record.date,
+            })
 
     def action_start_progress(self):
         for record in self:
@@ -92,6 +112,8 @@ class ChickProduction(models.Model):
     def action_complete(self):
         for record in self:
             record.state = 'completed'
+            if not record.end_date:
+                record.end_date = date.today()
 
     def action_cancel(self):
         for record in self:
@@ -154,10 +176,14 @@ class ChickProduction(models.Model):
             if record.start_date and record.phase_id.duration:
                 record.estimated_end_date = record.start_date + timedelta(days=record.phase_id.duration)
 
-    # @api.depends('import_folder')
-    # def _compute_reception_date(self):
-    #     for record in self:
-    #         record.reception_date = max(record.import_folder.mapped('reception_date'), default=False)
+    @api.onchange('import_folder')
+    def onchange_import_folder(self):
+        for record in self:
+            if record.import_folder:
+                record.male_quantity = sum(line.quantity for line in record.import_folder.purchase_order_ids.picking_ids.move_ids.filtered(
+                    lambda l: l.product_id.gender == 'male'))
+                record.female_quantity = sum(line.quantity for line in record.import_folder.purchase_order_ids.picking_ids.move_ids.filtered(
+                    lambda l: l.product_id.gender == 'female'))
 
     @api.depends('male_quantity', 'female_quantity', 'product_loss_ids')
     def _compute_remaining_quantities(self):
@@ -171,7 +197,7 @@ class ChickProduction(models.Model):
     def _get_female_declarations(self):
         return sum(line.quantity for line in self.product_declaration_ids.filtered(lambda l: l.gender == 'female'))
 
-    @api.depends('male_quantity', 'female_quantity')
+    @api.depends('male_quantity', 'female_quantity', 'product_loss_ids')
     def _compute_mortality_rates(self):
         for record in self:
             record.male_mortality_rate = (
@@ -208,6 +234,16 @@ class ChickProduction(models.Model):
             if not record.total_cost:  # Replace with logic for checking consumption
                 record.state = 'draft'
 
+    def open_consumptions(self):
+        return {
+            'name': 'Consumptions',
+            'type': 'ir.actions.act_window',
+            'res_model': 'real.consumption',
+            'view_mode': 'tree,form',
+            'context': {'default_chick_production_id': self.id},
+            'domain': [('chick_production_id', '=', self.id)],
+        }
+
 
 class RealConsumption(models.Model):
     _name = 'real.consumption'
@@ -225,7 +261,7 @@ class RealConsumption(models.Model):
         ('none', 'No Tracking')],
         store=True,
         string="Tracking", related="product_id.tracking")
-    cost = fields.Float(string="Cost", store=True, compute='_compute_cost')
+    cost = fields.Float(string="Cost", store=True)
     date = fields.Date(string="Date", default=fields.Date.context_today)
     gender = fields.Selection([
         ('male', 'Male'),
@@ -252,16 +288,16 @@ class RealConsumption(models.Model):
     def _onchange_product(self):
         for record in self:
             record.uom_id = record.product_id.uom_id.id
-
-    @api.depends('total_quantity', 'product_id', 'uom_id')
-    def _compute_cost(self):
-        for record in self:
-            if record.product_id and record.total_quantity > 0:
-                product_cost = record.product_id.standard_price  # Standard price of the product
-                uom_factor = record.uom_id._compute_quantity(1.0, record.product_id.uom_id)  # Conversion factor
-                record.cost = product_cost * record.total_quantity * uom_factor
-            else:
-                record.cost = 0.0
+    #
+    # @api.depends('total_quantity', 'product_id', 'uom_id')
+    # def _compute_cost(self):
+    #     for record in self:
+    #         if record.product_id and record.total_quantity > 0:
+    #             product_cost = record.product_id.standard_price  # Standard price of the product
+    #             uom_factor = record.uom_id._compute_quantity(1.0, record.product_id.uom_id)  # Conversion factor
+    #             record.cost = product_cost * record.total_quantity * uom_factor
+    #         else:
+    #             record.cost = 0.0
 
     @api.onchange('total_quantity', 'product_id', 'uom_id', 'lot_id')
     def _verify_quantity(self):
@@ -308,6 +344,8 @@ class RealConsumption(models.Model):
                     })]
                 })],
             })
+            record.cost = sum(line.value for line in pick_output.move_ids.stock_valuation_layer_ids.filtered(
+                lambda l: l.product_id == record.product_id))
             pick_output.button_validate()
             record.is_confirmed = True
             self.env['chick.production.cost'].create({
