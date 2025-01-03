@@ -223,6 +223,7 @@ class ChickProduction(models.Model):
                 'default_domain_lot_ids': domain_lot_ids,
                 'default_domain_product_ids': self.phase_id.declare_product_ids.ids,
                 'default_domain_consumed_product_ids': self.phase_id.consume_product_ids.ids,
+                'building_id': self.building_id.id,
             },
         }
 
