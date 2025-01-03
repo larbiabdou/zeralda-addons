@@ -43,6 +43,7 @@
                             <field name="target_humidity"/>
                             <field name="next_phase_id"/>
                             <field name="eggs_production"/>
+                            <field name="type"/>
                         </group>
                     </group>
                 </sheet>

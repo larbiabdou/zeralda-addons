@@ -31,19 +31,9 @@ class ProductionPhase(models.Model):
         string='Products to Declare'
     )
 
-# class ProductionPhaseProductConsume(models.Model):
-#     _name = 'production.phase.product.consume'
-#     _description = 'Product to Consume'
-#
-#     phase_id = fields.Many2one('production.phase', string='Phase', required=True, ondelete='cascade')
-#     product_id = fields.Many2one('product.product', string='Product', required=True)
-#     product_uom_id = fields.Many2one('uom.uom', string='Unit of Measure', required=True)
-#
-#
-# class ProductionPhaseProductDeclare(models.Model):
-#     _name = 'production.phase.product.declare'
-#     _description = 'Product to Declare'
-#
-#     phase_id = fields.Many2one('production.phase', string='Phase', required=True, ondelete='cascade')
-#     product_id = fields.Many2one('product.product', string='Product', required=True)
-#     product_uom_id = fields.Many2one('uom.uom', string='Unit of Measure', required=True)
+    type = fields.Selection(
+        string='Type',
+        selection=[('phase_1', 'Phase 1'),
+                   ('phase_2', 'Phase 2'),
+                   ('eggs_production', 'Eggs production'),],
+        required=False, )

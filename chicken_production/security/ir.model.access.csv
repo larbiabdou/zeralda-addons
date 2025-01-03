@@ -9,3 +9,5 @@ access_product_wizard_user,access.product.wizard.user,model_produce_wizard,base.
 access_chick_production_equipment_user,access.chick.production.equipment.user,model_chick_production_equipment,base.group_user,1,1,1,1
 access_chick_production_cost_user,access.chick.production.cost.user,model_chick_production_cost,base.group_user,1,1,1,1
 
+access_chick_production_next_phase_wizard_user,chick.production.next.phase.wizard.user,model_chick_production_next_phase_wizard,base.group_user,1,1,1,1
+access_chick_production_next_phase_line_user,chick.production.next.phase.line.user,model_chick_production_next_phase_line,base.group_user,1,1,1,1

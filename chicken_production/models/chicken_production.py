@@ -13,6 +13,14 @@ class ChickProduction(models.Model):
     start_date = fields.Date(string='Start Date', required=True)
     phase_id = fields.Many2one('production.phase', string='Phase', required=True)
     estimated_end_date = fields.Date(string='Estimated End Date', compute='_compute_estimated_end_date', store=True)
+    previous_production_id = fields.Many2one(
+        comodel_name='chick.production',
+        string='Previous production',
+        required=False)
+    next_production_id = fields.Many2one(
+        comodel_name='chick.production',
+        string='Next production',
+        required=False)
     end_date = fields.Date(
         string='End date',
         required=False)
@@ -72,6 +80,12 @@ class ChickProduction(models.Model):
         string='Costs',
         required=False)
 
+    type = fields.Selection(
+        string='Type',
+        related='phase_id.type',
+        store=True,
+        required=False, )
+
     # State
     state = fields.Selection([
         ('draft', 'Draft'),
@@ -81,29 +95,67 @@ class ChickProduction(models.Model):
         ('canceled', 'Canceled')
     ], default='draft', string='State')
 
+    def open_previous_production(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Production',
+            'res_model': 'chick.production',
+            'view_mode': 'form',
+            'res_id': self.previous_production_id.id
+        }
+
+    def open_next_production(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Production',
+            'res_model': 'chick.production',
+            'view_mode': 'form',
+            'res_id': self.next_production_id.id
+        }
+
+    def action_open_next_phase_wizard(self):
+        domain_lot_ids = self.product_declaration_ids.mapped('lot_id')
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Next Phase',
+            'res_model': 'chick.production.next.phase.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_production_id': self.id,
+                'default_domain_product_ids': self.phase_id.declare_product_ids.ids,
+                'default_next_phase_id': self.phase_id.next_phase_id.id,
+                'default_domain_lot_ids': domain_lot_ids.ids
+            }
+        }
+
     def action_confirm(self):
         for record in self:
             record.state = 'confirmed'
-            male_reception_cost = sum(line.value for line in record.import_folder.purchase_order_ids.picking_ids.move_ids.stock_valuation_layer_ids.filtered(
-                lambda l: l.product_id.gender == 'male'))
-            female_reception_cost = sum(line.value for line in record.import_folder.purchase_order_ids.picking_ids.move_ids.stock_valuation_layer_ids.filtered(
-                lambda l: l.product_id.gender == 'female'))
-            self.env['chick.production.cost'].create({
-                'name': 'Male reception cost',
-                'chick_production_id': record.id,
-                'type': 'reception',
-                'gender': 'male',
-                'amount': male_reception_cost,
-                #'date': record.date,
-            })
-            self.env['chick.production.cost'].create({
-                'name': 'Female reception cost',
-                'chick_production_id': record.id,
-                'type': 'reception',
-                'gender': 'female',
-                'amount': female_reception_cost,
-                #'date': record.date,
-            })
+            if record.phase_id.type == 'phase_1':
+                male_reception_cost = sum(line.value for line in record.import_folder.purchase_order_ids.picking_ids.move_ids.stock_valuation_layer_ids.filtered(
+                    lambda l: l.product_id.gender == 'male'))
+                female_reception_cost = sum(line.value for line in record.import_folder.purchase_order_ids.picking_ids.move_ids.stock_valuation_layer_ids.filtered(
+                    lambda l: l.product_id.gender == 'female'))
+            if record.phase_id.type == 'phase_2':
+                male_reception_cost = record.previous_production_id.male_unitary_cost * record.quantity_male_remaining
+                female_reception_cost = record.previous_production_id.female_unitary_cost * record.quantity_female_remaining
+            if record.quantity_male_remaining > 0:
+                self.env['chick.production.cost'].create({
+                    'name': 'Male reception cost',
+                    'chick_production_id': record.id,
+                    'type': 'reception',
+                    'gender': 'male',
+                    'amount': male_reception_cost ,
+                })
+            if record.quantity_female_remaining > 0:
+                self.env['chick.production.cost'].create({
+                    'name': 'Female reception cost',
+                    'chick_production_id': record.id,
+                    'type': 'reception',
+                    'gender': 'female',
+                    'amount': female_reception_cost,
+                })
 
     def action_start_progress(self):
         for record in self:
@@ -124,6 +176,16 @@ class ChickProduction(models.Model):
             record.state = 'draft'
 
     def action_loss(self):
+        domain_lot_ids = False
+        if self.phase_id.type == 'phase_1':
+            lines = self.import_folder.purchase_order_ids.picking_ids.move_line_ids if self.chick_production_id.import_folder.purchase_order_ids and self.chick_production_id.import_folder.purchase_order_ids.picking_ids else \
+                False
+            if lines:
+                domain_lot_ids = lines.lot_id.ids
+        elif self.phase_id.type == 'phase_2':
+            lines = self.previous_production_id.product_declaration_ids if self.previous_production_id.product_declaration_ids else False
+            if lines:
+                domain_lot_ids = lines.lot_id.ids
         return {
             'name': _('Produce'),
             'type': 'ir.actions.act_window',
@@ -133,12 +195,22 @@ class ChickProduction(models.Model):
             'context': {
                 'default_chick_production_id': self.id,
                 'default_type': 'loss',
-                #'default_domain_product_ids': self.phase_id.consume_product_ids.ids,
+                'default_domain_lot_ids': domain_lot_ids,
                 'default_domain_consumed_product_ids': self.phase_id.consume_product_ids.ids,
             },
         }
 
     def action_produce(self):
+        domain_lot_ids = False
+        if self.phase_id.type == 'phase_1':
+            lines = self.import_folder.purchase_order_ids.picking_ids.move_line_ids if self.chick_production_id.import_folder.purchase_order_ids and self.chick_production_id.import_folder.purchase_order_ids.picking_ids else \
+                False
+            if lines:
+                domain_lot_ids = lines.lot_id.ids
+        elif self.phase_id.type == 'phase_2':
+            lines = self.previous_production_id.product_declaration_ids if self.previous_production_id.product_declaration_ids else False
+            if lines:
+                domain_lot_ids = lines.lot_id.ids
         return {
             'name': _('Produce'),
             'type': 'ir.actions.act_window',
@@ -148,6 +220,7 @@ class ChickProduction(models.Model):
             'context': {
                 'default_chick_production_id': self.id,
                 'default_type': 'declaration',
+                'default_domain_lot_ids': domain_lot_ids,
                 'default_domain_product_ids': self.phase_id.declare_product_ids.ids,
                 'default_domain_consumed_product_ids': self.phase_id.consume_product_ids.ids,
             },
