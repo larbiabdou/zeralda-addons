@@ -203,7 +203,7 @@ class ChickProduction(models.Model):
     def action_produce(self):
         domain_lot_ids = False
         if self.phase_id.type == 'phase_1':
-            lines = self.import_folder.purchase_order_ids.picking_ids.move_line_ids if self.chick_production_id.import_folder.purchase_order_ids and self.chick_production_id.import_folder.purchase_order_ids.picking_ids else \
+            lines = self.import_folder.purchase_order_ids.picking_ids.move_line_ids if self.import_folder.purchase_order_ids and self.import_folder.purchase_order_ids.picking_ids else \
                 False
             if lines:
                 domain_lot_ids = lines.lot_id.ids

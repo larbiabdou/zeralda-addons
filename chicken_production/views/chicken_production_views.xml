@@ -40,7 +40,7 @@
                     <button name="action_cancel" type="object" string="Cancel"
                             invisible="state not in ['draft','confirmed','in_progress']" class="btn-danger"/>
                     <button name="action_reset_to_draft" type="object" string="Reset to Draft"
-                            invisible="state not in ['canceled','completed']" class="btn-secondary"/>
+                            invisible="state not in ['canceled']" class="btn-secondary"/>
                      <button name="action_open_next_phase_wizard"
                         string="Next Phase"
                         type="object"
