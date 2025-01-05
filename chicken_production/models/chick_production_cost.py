@@ -13,7 +13,9 @@ class ChickProductionCost(models.Model):
     type = fields.Selection([
         ('input', 'Intrant'),
         ('equipment', 'Équipement'),
-        ('reception', 'Reception')
+        ('reception', 'Reception'),
+        ('service', 'Service'),
+        ('salary', 'Salary'),
     ], string='Type', required=True)
     amount = fields.Float(string='Montant', digits='Product Price')
     resource = fields.Char(string='Ressource')
@@ -23,3 +25,4 @@ class ChickProductionCost(models.Model):
         ('male', 'Male'),
         ('female', 'Female')
     ], string="Gender Animal", required=True)
+    ventilation_id = fields.Many2one('cost.ventilation', string="Ventilation")

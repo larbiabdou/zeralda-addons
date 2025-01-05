@@ -15,5 +15,10 @@
               parent="menu_chick_configuration"
               sequence="20"
               action="action_production_phase" />
-    <menuitem id="menu_chick_production" name="Chick Production" parent="chick_production_root" action="chicken_production.action_chick_production" sequence="1" />
+    <menuitem id="menu_chick_production" name="Chick Production" parent="chick_production_root" sequence="1">
+        <!-- This Menu Item will appear in the Upper bar, That's why It needs NO parent or action -->
+        <menuitem id="menu_chick_production_sub_menu" action="chicken_production.action_chick_production"/>
+        <menuitem id="menu_cost_ventilation" action="chicken_production.cost_ventilation_action"/>
+    </menuitem>
+
 </odoo>

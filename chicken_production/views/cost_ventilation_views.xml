@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_cost_ventilation_form" model="ir.ui.view">
+        <field name="name">cost.ventilation.form</field>
+        <field name="model">cost.ventilation</field>
+        <field name="arch" type="xml">
+            <form string="Cost Ventilation">
+                 <header>
+                    <button string="Validate" type="object" name="action_validate" invisible="state != 'draft'" class="btn-primary"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,validated"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="date" readonly="state == 'validated'"/>
+                        <field name="type" readonly="state == 'validated'"/>
+                        <field name="amount" readonly="state == 'validated'"/>
+                        <field name="production_ids" readonly="state == 'validated'" widget="many2many_tags" domain="[('state', '=', 'in_progress')]"/>
+                    </group>
+                    <notebook>
+                        <page string="Costs">
+                            <field name="cost_ids" readonly="1">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="chick_production_id"/>
+                                    <field name="type"/>
+                                    <field name="amount"/>
+                                    <field name="gender"/>
+                                    <field name="date"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="cost_ventilation_view_tree" model="ir.ui.view">
+        <field name="name">cost_ventilation_view_tree</field>
+        <field name="model">cost.ventilation</field>
+        <field name="arch" type="xml">
+            <tree string="cost_ventilation_tree">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="type"/>
+                <field name="amount"/>
+            </tree>
+        </field>
+    </record>
+    <record id="cost_ventilation_action" model="ir.actions.act_window">
+        <field name="name">Ventilations</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cost.ventilation</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

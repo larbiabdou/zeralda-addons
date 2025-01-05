@@ -15,6 +15,7 @@
         'wizard/product_wizard_views.xml',
         'views/real_consumption_viiews.xml',
         'wizard/next_phase_wizard_views.xml',
+        'views/cost_ventilation_views.xml',
         'views/menu_views.xml',
     ],
     'installable': True,
