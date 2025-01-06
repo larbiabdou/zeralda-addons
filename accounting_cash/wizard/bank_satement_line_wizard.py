@@ -23,14 +23,13 @@ class BankStatementLineWizard(models.TransientModel):
         string='Reason',
         required=False)
 
-    def action_create_statement_line(self):
-        """Creates a bank statement line based on the wizard data"""
+    def _prepare_bank_statement_vales(self):
         statement_id = self.env.context.get('default_statement_id')
         statement = self.env['account.bank.statement'].browse(statement_id)
         statement_amount = self.amount if self.type in ('cash_in', 'customer_cash_in') else -1 * self.amount
         if not statement_id:
             return
-        line_id = self.env['account.bank.statement.line'].create({
+        return {
             'statement_id': statement_id,
             'partner_id': self.partner_id.id,
             'amount': statement_amount,
@@ -39,4 +38,9 @@ class BankStatementLineWizard(models.TransientModel):
             'date': statement.date,
             'type': self.type,
             'budget_post_id': self.budget_post_id.id,
-        })
+        }
+
+    def action_create_statement_line(self):
+        """Creates a bank statement line based on the wizard data"""
+        values = self._prepare_bank_statement_vales()
+        line_id = self.env['account.bank.statement.line'].create(values)

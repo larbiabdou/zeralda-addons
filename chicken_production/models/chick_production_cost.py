@@ -26,3 +26,14 @@ class ChickProductionCost(models.Model):
         ('female', 'Female')
     ], string="Gender Animal", required=True)
     ventilation_id = fields.Many2one('cost.ventilation', string="Ventilation")
+
+    @api.model
+    def create(self, values):
+        # Add code here
+        production = self.env['chick.production'].browse(values.get("chick_production_id"))
+        self.env['account.analytic.line'].create({
+            'name': values['name'],
+            'account_id': production.project_id.analytic_account_id.id,
+            'amount': -1 * values['amount'],
+        })
+        return super(ChickProductionCost, self).create(values)

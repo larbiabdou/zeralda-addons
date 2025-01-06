@@ -4,7 +4,7 @@
     'summary': 'Chicken production',
     'description': 'Chicken production',
     'category': 'Manufacturing',
-    'depends': ['stock', 'import_folder', 'maintenance'],
+    'depends': ['stock', 'import_folder', 'maintenance', 'project'],
     'data': [
         'data/ir_sequence_data.xml',
         'security/ir.model.access.csv',
@@ -14,7 +14,8 @@
         'views/chicken_production_views.xml',
         'views/maintenance_equipment_views.xml',
         'wizard/product_wizard_views.xml',
-        'views/real_consumption_viiews.xml',
+        'wizard/bank_statement_line_wizard.xml',
+        'views/real_consumption_views.xml',
         'wizard/next_phase_wizard_views.xml',
         'views/cost_ventilation_views.xml',
         'views/menu_views.xml',

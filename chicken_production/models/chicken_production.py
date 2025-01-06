@@ -24,6 +24,10 @@ class ChickProduction(models.Model):
     end_date = fields.Date(
         string='End date',
         required=False)
+    project_id = fields.Many2one(
+        comodel_name='project.project',
+        string='Project',
+        required=False)
     # Import Folder and Reception Details
     import_folder = fields.Many2one('import.folder', string='Import Folder')
     reception_date = fields.Date(string='Reception Date', store=True)
