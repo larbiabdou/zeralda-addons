@@ -152,7 +152,7 @@
                             </group>
                             <field name="cost_ids"
                             >
-                                <tree>
+                                <tree editable="bottom">
                                     <field name="type"/>
                                     <field name="name"/>
                                     <field name="resource"/>
