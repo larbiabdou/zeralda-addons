@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="seq_chicken_production" model="ir.sequence">
+            <field name="name">Chicken Production</field>
+            <field name="code">chick.production</field>
+            <field name="prefix">CP</field>
+            <field name="padding">5</field>
+        </record>
+    </data>
+</odoo>

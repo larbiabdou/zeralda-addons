@@ -6,6 +6,7 @@
     'category': 'Manufacturing',
     'depends': ['stock', 'import_folder', 'maintenance'],
     'data': [
+        'data/ir_sequence_data.xml',
         'security/ir.model.access.csv',
         'views/chick_configuration_views.xml',
         'views/chicken_building_views.xml',

@@ -9,7 +9,7 @@ class ChickProduction(models.Model):
     _description = 'Chick Production'
 
     # Basic fields
-    name = fields.Char(string='Name', required=True, default=lambda self: self._generate_name(), )
+    name = fields.Char(string='Name', required=True, default='/' )
     start_date = fields.Date(string='Start Date', required=True)
     phase_id = fields.Many2one('production.phase', string='Phase', required=True)
     estimated_end_date = fields.Date(string='Estimated End Date', compute='_compute_estimated_end_date', store=True)
@@ -299,9 +299,15 @@ class ChickProduction(models.Model):
                 record.week = 0
 
 
-    def _generate_name(self):
-        sequence = self.env['ir.sequence'].next_by_code('chick.production') or 'CP/0000'
-        return sequence
+    # def _generate_name(self):
+    #     sequence = self.env['ir.sequence'].next_by_code('chick.production') or 'CP/0000'
+    #     return sequence
+
+    @api.model
+    def create(self, vals):
+        if vals.get('name', _('New')) == _('New'):
+            vals['name'] = self.env['ir.sequence'].next_by_code('chick.production') or _('New')
+        return super(ChickProduction, self).create(vals)
 
     def _get_male_losses(self):
         return sum(line.quantity for line in self.product_loss_ids.filtered(lambda l: l.gender == 'male'))

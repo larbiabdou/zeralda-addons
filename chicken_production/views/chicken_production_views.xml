@@ -70,7 +70,7 @@
                     <field name="previous_production_id" invisible="1"/>
                     <group>
                         <group>
-                            <field name="name" readonly="state != 'draft'"/>
+                            <field name="name" readonly="1"/>
                             <field name="start_date" readonly="state != 'draft'"/>
                             <field name="end_date" readonly="state not in ['draft', 'confirmed', 'in_progress']"/>
                             <field name="phase_id" readonly="state != 'draft'"/>
@@ -150,7 +150,7 @@
                                 <field name="male_unitary_cost" readonly="1"/>
                                 <field name="female_unitary_cost" readonly="1"/>
                             </group>
-                            <field name="cost_ids"
+                            <field name="cost_ids" readonly="state != 'in_progress'"
                             >
                                 <tree editable="bottom">
                                     <field name="type"/>
