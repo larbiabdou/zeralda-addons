@@ -135,8 +135,14 @@ class ChickProduction(models.Model):
             if record.phase_id.type == 'phase_1':
                 male_reception_cost = sum(line.value for line in record.import_folder.purchase_order_ids.picking_ids.move_ids.stock_valuation_layer_ids.filtered(
                     lambda l: l.product_id.gender == 'male'))
+                male_quantity = record.import_folder.purchase_order_ids.picking_ids.move_ids.filtered(
+                    lambda l: l.product_id.gender == 'male')[0].quantity
+                male_reception_cost = male_reception_cost / male_quantity * record.quantity_male_remaining
                 female_reception_cost = sum(line.value for line in record.import_folder.purchase_order_ids.picking_ids.move_ids.stock_valuation_layer_ids.filtered(
                     lambda l: l.product_id.gender == 'female'))
+                female_quantity = record.import_folder.purchase_order_ids.picking_ids.move_ids.filtered(
+                    lambda l: l.product_id.gender == 'female')[0].quantity
+                female_reception_cost = female_reception_cost / female_quantity * record.quantity_female_remaining
             if record.phase_id.type == 'phase_2':
                 male_reception_cost = record.previous_production_id.male_unitary_cost * record.quantity_male_remaining
                 female_reception_cost = record.previous_production_id.female_unitary_cost * record.quantity_female_remaining
