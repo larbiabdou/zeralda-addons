@@ -420,8 +420,8 @@ class RealConsumption(models.Model):
             })
 
             pick_output.button_validate()
-            record.cost = sum(line.value for line in pick_output.move_ids.stock_valuation_layer_ids.filtered(
-                lambda l: l.product_id == record.product_id))
+            record.cost = abs(sum(line.value for line in pick_output.move_ids.stock_valuation_layer_ids.filtered(
+                lambda l: l.product_id == record.product_id)))
             record.is_confirmed = True
             self.env['chick.production.cost'].create({
                 'name': record.product_id.name,
