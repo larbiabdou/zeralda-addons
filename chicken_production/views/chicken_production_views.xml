@@ -170,7 +170,7 @@
                                     <field name="quantity" column_invisible="parent and parent.type == 'eggs_production'"/>
                                     <field name="quantity" string="Eggs quantity" column_invisible="parent and parent.type != 'eggs_production'"/>
                                     <field name="average_weight" column_invisible="parent and parent.type != 'eggs_production'"/>
-
+                                    <field name="weight_uom_id" column_invisible="parent and parent.type != 'eggs_production'"/>
                                     <field name="uom_id"/>
                                     <field name="gender" column_invisible="parent and parent.type == 'eggs_production'"/>
                                     <field name="lot_id" readonly="1"/>

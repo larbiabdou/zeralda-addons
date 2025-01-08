@@ -64,6 +64,12 @@ class ProduceWizard(models.Model):
         string='Eggs average weight',
         required=False)
 
+    weight_uom_id = fields.Many2one(
+        comodel_name='uom.uom',
+        string='Uom',
+        domain=lambda self: [('category_id', '=', self.env.ref('uom.product_uom_categ_kgm').id)],
+        required=False)
+
     def action_validate_production(self):
         location_production = self.env['stock.location'].search([('usage', '=', 'production')])
         for record in self:
