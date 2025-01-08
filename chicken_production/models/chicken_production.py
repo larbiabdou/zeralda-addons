@@ -118,7 +118,12 @@ class ChickProduction(models.Model):
         }
 
     def action_open_next_phase_wizard(self):
-        domain_lot_ids = self.product_declaration_ids.mapped('lot_id')
+        if self.phase_id.next_phase_id and self.phase_id.next_phase_id.type == 'eggs_production':
+            domain_lot_ids = self.product_declaration_ids.filtered(lambda l:l.product_id.gender == 'female').mapped('lot_id')
+            domain_product_ids = self.phase_id.declare_product_ids.filtered(lambda l:l.gender == 'female')
+        else:
+            domain_lot_ids = self.product_declaration_ids.mapped('lot_id')
+            domain_product_ids = self.phase_id.declare_product_ids
         return {
             'type': 'ir.actions.act_window',
             'name': 'Next Phase',
@@ -127,9 +132,10 @@ class ChickProduction(models.Model):
             'target': 'new',
             'context': {
                 'default_production_id': self.id,
-                'default_domain_product_ids': self.phase_id.declare_product_ids.ids,
+                'default_domain_product_ids': domain_product_ids.ids,
                 'default_next_phase_id': self.phase_id.next_phase_id.id,
-                'default_domain_lot_ids': domain_lot_ids.ids
+                'default_domain_lot_ids': domain_lot_ids.ids,
+                'default_building_id': self.building_id.id,
             }
         }
 
@@ -147,7 +153,7 @@ class ChickProduction(models.Model):
                 female_quantity = record.import_folder.purchase_order_ids.picking_ids.move_ids.filtered(
                     lambda l: l.product_id.gender == 'female')[0].quantity
                 female_reception_cost = female_reception_cost / female_quantity * record.quantity_female_remaining
-            if record.phase_id.type == 'phase_2':
+            else:
                 male_reception_cost = record.previous_production_id.male_unitary_cost * record.quantity_male_remaining
                 female_reception_cost = record.previous_production_id.female_unitary_cost * record.quantity_female_remaining
             if record.quantity_male_remaining > 0:
@@ -356,7 +362,7 @@ class RealConsumption(models.Model):
     gender = fields.Selection([
         ('male', 'Male'),
         ('female', 'Female')
-    ], string="Gender Animal", required=True)
+    ], string="Gender Animal")
 
     is_confirmed = fields.Boolean(
         string='Is confirmed',
@@ -372,7 +378,11 @@ class RealConsumption(models.Model):
     @api.onchange('quantity_per_unit', 'gender')
     def _compute_total_quantity(self):
         for record in self:
-            record.total_quantity = record.quantity_per_unit * record.chick_production_id.female_quantity if record.gender == 'female' else record.quantity_per_unit * record.chick_production_id.male_quantity
+            if record.chick_production_id.type == 'eggs_production':
+                gender = 'female'
+            else:
+                gender = record.gender
+            record.total_quantity = record.quantity_per_unit * record.chick_production_id.female_quantity if gender == 'female' else record.quantity_per_unit * record.chick_production_id.male_quantity
 
     @api.onchange('product_id')
     def _onchange_product(self):
@@ -439,12 +449,16 @@ class RealConsumption(models.Model):
             record.cost = abs(sum(line.value for line in pick_output.move_ids.stock_valuation_layer_ids.filtered(
                 lambda l: l.product_id == record.product_id)))
             record.is_confirmed = True
+            if record.chick_production_id.type == 'eggs_production':
+                gender = 'female'
+            else:
+                gender = record.gender
             self.env['chick.production.cost'].create({
                 'name': record.product_id.name,
                 'resource': record.product_id.name,
                 'chick_production_id': record.chick_production_id.id,
                 'type': 'input',
-                'gender': record.gender,
+                'gender': gender,
                 'amount': record.cost,
                 'product_id': record.product_id.id,
                 'date': record.date,
@@ -496,16 +510,17 @@ class ChickProductionEquipment(models.Model):
 
     def button_confirm(self):
         for record in self:
-            self.env['chick.production.cost'].create({
-                'name': record.equipment_id.name,
-                'resource': record.equipment_id.name,
-                'chick_production_id': record.production_id.id,
-                'type': 'equipment',
-                'amount': record.cost * record.production_id.quantity_male_remaining / (record.production_id.quantity_male_remaining + record.production_id.quantity_female_remaining),
-                'gender': 'male',
-                'equipment_id': record.equipment_id.id,
-                'date': record.date,
-            })
+            if record.production_id.type != 'eggs_production':
+                self.env['chick.production.cost'].create({
+                    'name': record.equipment_id.name,
+                    'resource': record.equipment_id.name,
+                    'chick_production_id': record.production_id.id,
+                    'type': 'equipment',
+                    'amount': record.cost * record.production_id.quantity_male_remaining / (record.production_id.quantity_male_remaining + record.production_id.quantity_female_remaining),
+                    'gender': 'male',
+                    'equipment_id': record.equipment_id.id,
+                    'date': record.date,
+                })
             self.env['chick.production.cost'].create({
                 'name': record.equipment_id.name,
                 'resource': record.equipment_id.name,

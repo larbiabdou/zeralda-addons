@@ -11,6 +11,7 @@
                     <field name="next_phase_id"/>
                     <field name="domain_product_ids" invisible="1"/>
                     <field name="domain_lot_ids" invisible="1"/>
+                    <field name="building_id"/>
                 </group>
                 <group>
                     <field name="line_ids">

@@ -41,11 +41,11 @@
                             invisible="state not in ['draft','confirmed','in_progress']" class="btn-danger"/>
                     <button name="action_reset_to_draft" type="object" string="Reset to Draft"
                             invisible="state not in ['canceled']" class="btn-secondary"/>
-                     <button name="action_open_next_phase_wizard"
-                        string="Next Phase"
-                        type="object"
-                        class="btn-primary"
-                        invisible="state not in ['completed'] or next_production_id"/>
+                    <button name="action_open_next_phase_wizard"
+                            string="Next Phase"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state not in ['completed'] or next_production_id"/>
 
                     <field name="state" widget="statusbar"/>
                 </header>
@@ -55,15 +55,15 @@
                                 name="open_consumptions"
                                 class="oe_stat_button" icon="fa-list"
                                 invisible="not real_consumption_ids"/>
+                        <button string="Previous phase" type="object"
+                                name="open_previous_production"
+                                class="oe_stat_button" icon="fa-arrow-left"
+                                invisible="not previous_production_id"/>
 
                         <button string="Next phase" type="object"
                                 name="open_next_production"
                                 class="oe_stat_button" icon="fa-arrow-right"
                                 invisible="not next_production_id"/>
-                         <button string="Previous phase" type="object"
-                                name="open_previous_production"
-                                class="oe_stat_button" icon="fa-arrow-left"
-                                invisible="not previous_production_id"/>
 
                     </div>
                     <field name="next_production_id" invisible="1"/>
@@ -71,12 +71,12 @@
                     <group>
                         <group>
                             <field name="name" readonly="1"/>
-                            <field name="project_id"  required="1"/>
+                            <field name="project_id" required="1"/>
                             <field name="start_date" readonly="state != 'draft'"/>
                             <field name="end_date" readonly="state not in ['draft', 'confirmed', 'in_progress']"/>
                             <field name="phase_id" readonly="state != 'draft'"/>
                             <field name="estimated_end_date" readonly="1"/>
-                            <field name="building_id" readonly="state != 'draft'"/>
+                            <field name="building_id"/>
                             <field name="day"/>
                             <field name="week"/>
                         </group>
@@ -84,11 +84,11 @@
                             <field name="import_folder" readonly="state != 'draft'" invisible="type != 'phase_1'"/>
                             <field name="type" invisible="1"/>
                             <field name="reception_date" invisible="1"/>
-                            <field name="male_quantity" readonly="state != 'draft'"/>
+                            <field name="male_quantity" readonly="state != 'draft'" invisible="type == 'eggs_production'"/>
                             <field name="female_quantity" readonly="state != 'draft'"/>
-                            <field name="quantity_male_remaining" readonly="1"/>
+                            <field name="quantity_male_remaining" readonly="1" invisible="type == 'eggs_production'"/>
                             <field name="quantity_female_remaining" readonly="1"/>
-                            <field name="male_mortality_rate" readonly="1"/>
+                            <field name="male_mortality_rate" readonly="1" invisible="type == 'eggs_production'"/>
                             <field name="female_mortality_rate" readonly="1"/>
                         </group>
                     </group>
@@ -104,7 +104,7 @@
                                     <field name="lot_id" required="tracking != 'none'"/>
                                     <field name="cost"/>
                                     <field name="date"/>
-                                    <field name="gender"/>
+                                    <field name="gender" column_invisible="parent and parent.type == 'eggs_production'"/>
                                     <field name="tracking" column_invisible="1"/>
                                     <field name="is_confirmed" column_invisible="1"/>
                                     <button string="Confirm Consumptions"
@@ -146,9 +146,9 @@
                         <page string="Costs">
                             <group>
                                 <field name="total_cost" readonly="1"/>
-                                <field name="total_male_cost" readonly="1"/>
+                                <field name="total_male_cost" readonly="1" invisible="type == 'eggs_production'"/>
                                 <field name="total_female_cost" readonly="1"/>
-                                <field name="male_unitary_cost" readonly="1"/>
+                                <field name="male_unitary_cost" readonly="1" invisible="type == 'eggs_production'"/>
                                 <field name="female_unitary_cost" readonly="1"/>
                             </group>
                             <field name="cost_ids" readonly="state != 'in_progress'"
@@ -166,10 +166,13 @@
                             <field name="product_declaration_ids" readonly="state != 'in_progress'">
                                 <tree create="0">
                                     <field name="product_id"/>
-                                    <field name="product_to_consume_id"/>
-                                    <field name="quantity"/>
+                                    <field name="product_to_consume_id" column_invisible="parent and parent.type == 'eggs_production'"/>
+                                    <field name="quantity" column_invisible="parent and parent.type == 'eggs_production'"/>
+                                    <field name="quantity" string="Eggs quantity" column_invisible="parent and parent.type != 'eggs_production'"/>
+                                    <field name="average_weight" column_invisible="parent and parent.type != 'eggs_production'"/>
+
                                     <field name="uom_id"/>
-                                    <field name="gender"/>
+                                    <field name="gender" column_invisible="parent and parent.type == 'eggs_production'"/>
                                     <field name="lot_id" readonly="1"/>
                                     <field name="cost" readonly="1"/>
                                 </tree>

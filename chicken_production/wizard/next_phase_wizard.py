@@ -17,16 +17,21 @@ class ChickProductionNextPhaseWizard(models.TransientModel):
     domain_lot_ids = fields.Many2many(
         comodel_name='stock.lot',
         string='Domain_lot_ids')
+    building_id = fields.Many2one(
+        comodel_name='chicken.building',
+        string='Building',
+        required=False)
 
     def confirm_next_phase(self):
         male_quantity = sum(line.quantity for line in self.line_ids.filtered(lambda l: l.product_id.gender == 'male'))
         female_quantity = sum(line.quantity for line in self.line_ids.filtered(lambda l: l.product_id.gender == 'female'))
-        if self.production_id.phase_id.type == 'phase_1':
+        if self.production_id.phase_id.type in ['phase_1', 'phase_2']:
             next_production_id = self.env['chick.production'].create({
                 'phase_id': self.next_phase_id.id,
                 'previous_production_id': self.production_id.id,
                 'start_date': self.start_date,
                 'male_quantity': male_quantity,
+                'project_id': self.production_id.project_id.id,
                 'female_quantity': female_quantity,
             })
             self.production_id.next_production_id = next_production_id.id
