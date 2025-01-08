@@ -402,7 +402,8 @@ class RealConsumption(models.Model):
     #@api.onchange('total_quantity', 'product_id', 'uom_id', 'lot_id')
     def _verify_quantity(self):
         for record in self:
-            if record.product_id and record.uom_id and record.total_quantity > 0:
+            quantity = record.uom_id._compute_quantity(record.total_quantity, record.product_id.uom_id)
+            if record.product_id and record.uom_id and quantity > 0:
                 if round(self.env['stock.quant']._get_available_quantity(
                         record.product_id,
                         record.chick_production_id.building_id.stock_location_id
@@ -414,7 +415,7 @@ class RealConsumption(models.Model):
                             record.product_id,
                             record.chick_production_id.building_id.stock_location_id,
                             lot_id=record.lot_id,
-                    ), 2) < record.total_quantity:
+                    ), 2) < quantity:
                         raise ValidationError(_("Quantité non disponible !"))
 
     def action_confirm_consumption(self):
