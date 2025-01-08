@@ -399,7 +399,7 @@ class RealConsumption(models.Model):
     #         else:
     #             record.cost = 0.0
 
-    @api.onchange('total_quantity', 'product_id', 'uom_id', 'lot_id')
+    #@api.onchange('total_quantity', 'product_id', 'uom_id', 'lot_id')
     def _verify_quantity(self):
         for record in self:
             if record.product_id and record.uom_id and record.total_quantity > 0:
@@ -420,6 +420,7 @@ class RealConsumption(models.Model):
     def action_confirm_consumption(self):
         location_production = self.env['stock.location'].search([('usage', '=', 'production')])
         for record in self:
+            record._verify_quantity()
             pick_output = self.env['stock.picking'].create({
                 # 'name': 'Soins',
                 'picking_type_id': self.env.ref('stock.picking_type_out').id,

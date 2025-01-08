@@ -48,6 +48,10 @@ class ProduceWizard(models.Model):
                    ('declaration', 'Declaration'), ],
         required=False, )
 
+    date = fields.Date(string="Dateé",
+        default=fields.Date.context_today,
+    )
+
     phase_type = fields.Selection(
         string='Type',
         selection=[('phase_1', 'Phase 1'),

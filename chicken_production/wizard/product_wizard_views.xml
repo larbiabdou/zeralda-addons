@@ -10,6 +10,7 @@
                     <field name="state" invisible="1"/>
                     <field name="type" invisible="1"/>
                     <field name="phase_type" invisible="1"/>
+                    <field name="date"/>
                     <field name="chick_production_id" invisible="1"/>
                     <field name="product_id" invisible="type == 'loss'" domain="[('id', 'in', domain_product_ids)]" readonly="state != 'draft'"/>
                     <field name="product_to_consume_id" invisible="phase_type == 'eggs_production'" domain="[('id', 'in', domain_consumed_product_ids)]" readonly="state != 'draft'"/>
