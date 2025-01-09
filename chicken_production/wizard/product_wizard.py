@@ -140,4 +140,7 @@ class ProduceWizard(models.Model):
                     })],
                 })
                 consumption_picking.button_validate()
+                if record.type == 'loss':
+                    record.cost = sum(line.value for line in consumption_picking.move_ids.stock_valuation_layer_ids.filtered(
+                        lambda l: l.product_id == record.product_to_consume_id))
                 record.state = 'confirmed'

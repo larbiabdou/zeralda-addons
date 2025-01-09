@@ -198,7 +198,7 @@ class ChickProduction(models.Model):
                 False
             if lines:
                 domain_lot_ids = lines.lot_id.ids
-        elif self.phase_id.type == 'phase_2':
+        else:
             lines = self.previous_production_id.product_declaration_ids if self.previous_production_id.product_declaration_ids else False
             if lines:
                 domain_lot_ids = lines.lot_id.ids
