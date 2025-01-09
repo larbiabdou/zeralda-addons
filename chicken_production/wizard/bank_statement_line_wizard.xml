@@ -7,6 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='type']" position="after">
                 <field name="project_id"/>
+                <field name="production_ids" domain="[('project_id', '=', project_id), ('state', '=', 'in_progress')]" widget="many2many_tags"/>
             </xpath>
         </field>
     </record>

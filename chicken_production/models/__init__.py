@@ -6,3 +6,4 @@ from . import maintenance_equipment
 from . import chick_production_cost
 from . import cost_ventitation
 from . import account_bank_statement
+from . import account_analytic_line

@@ -36,5 +36,6 @@ class ChickProductionCost(models.Model):
                 'name': values['name'],
                 'account_id': production.project_id.analytic_account_id.id,
                 'amount': -1 * values['amount'],
+                'chick_production_id': values['chick_production_id'],
             })
         return super(ChickProductionCost, self).create(values)
