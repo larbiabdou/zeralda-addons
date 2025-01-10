@@ -14,6 +14,10 @@ class ProduceWizard(models.Model):
         comodel_name='product.product',
         relation="domain_consumed_product_ids",
         string='Domain_product_ids')
+    declaration_id = fields.Many2one(
+        comodel_name='produce.wizard',
+        string='Declaration_id',
+        required=False)
     product_id = fields.Many2one('product.product', string="Product to Declare")
     product_to_consume_id = fields.Many2one('product.product', string="Product to Consume")
     quantity = fields.Float(string="Quantity", required=True)
@@ -45,7 +49,8 @@ class ProduceWizard(models.Model):
     type = fields.Selection(
         string='Type',
         selection=[('loss', 'Loss'),
-                   ('declaration', 'Declaration'), ],
+                   ('declaration', 'Declaration'),
+                   ('raw', 'Raw'),],
         required=False, )
 
     date = fields.Date(string="Dateé",
@@ -70,10 +75,26 @@ class ProduceWizard(models.Model):
         domain=lambda self: [('category_id', '=', self.env.ref('uom.product_uom_categ_kgm').id)],
         required=False)
 
+    remaining_quantity = fields.Integer(
+        string='Remaining_quantity',
+        compute="compute_quantity_remaining",
+        required=False)
+
+    unit_cost = fields.Float(
+        string='Unit cost',
+        required=False)
+
+    def compute_quantity_remaining(self):
+        for record in self:
+            declarations = self.env['produce.wizard'].search([('declaration_id', '=', record.id), ('type', '=', 'raw')])
+            quantity_used = sum(declaration.quantity for declaration in declarations) or 0
+            record.remaining_quantity = record.quantity - quantity_used
+
     def action_validate_production(self):
         location_production = self.env['stock.location'].search([('usage', '=', 'production')])
         for record in self:
             production = record.chick_production_id
+            record.remaining_quantity = record.quantity
             if record.type != 'loss':
                 record.lot_id = self.env['stock.lot'].create({
                     'product_id': record.product_id.id,
@@ -82,10 +103,13 @@ class ProduceWizard(models.Model):
                 })
 
             # Create stock picking for product consumption
-                if record.phase_type != 'eggs_production':
+                if record.phase_type == 'incubation':
+                    unit_cost = record.chick_production_id.unitary_eggs_cost
+                elif record.phase_type != 'eggs_production':
                     unit_cost = record.chick_production_id.male_unitary_cost if record.product_id.gender == 'male' else record.chick_production_id.female_unitary_cost
                 else:
                     unit_cost = record.chick_production_id.total_cost / record.quantity
+                record.unit_cost = unit_cost
                 declaration_picking = self.env['stock.picking'].create({
                     'partner_id': False,
                     'picking_type_id': self.env.ref('stock.picking_type_out').id,
@@ -143,4 +167,4 @@ class ProduceWizard(models.Model):
                 if record.type == 'loss':
                     record.cost = sum(line.value for line in consumption_picking.move_ids.stock_valuation_layer_ids.filtered(
                         lambda l: l.product_id == record.product_to_consume_id))
-                record.state = 'confirmed'
+            record.state = 'confirmed'

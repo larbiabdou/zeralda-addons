@@ -5,9 +5,9 @@
         <field name="model">maintenance.equipment</field>
         <field name="inherit_id" ref="maintenance.hr_equipment_view_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='location']" position="after">
-                <field name="cost"/>
+            <xpath expr="//field[@name='cost']" position="after">
                 <field name="uom_id"/>
+                <field name="capacity"/>
             </xpath>
         </field>
     </record>

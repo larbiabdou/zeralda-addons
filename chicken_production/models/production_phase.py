@@ -35,5 +35,6 @@ class ProductionPhase(models.Model):
         string='Type',
         selection=[('phase_1', 'Phase 1'),
                    ('phase_2', 'Phase 2'),
-                   ('eggs_production', 'Eggs production'),],
+                   ('eggs_production', 'Eggs production'),
+                   ('incubation', 'Incubation')],
         required=False, )

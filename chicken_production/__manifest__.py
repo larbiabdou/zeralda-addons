@@ -17,6 +17,7 @@
         'wizard/bank_statement_line_wizard.xml',
         'views/real_consumption_views.xml',
         'wizard/next_phase_wizard_views.xml',
+        'wizard/incubation_wizard.xml',
         'views/cost_ventilation_views.xml',
         'views/menu_views.xml',
     ],

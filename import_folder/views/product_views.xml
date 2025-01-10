@@ -9,6 +9,7 @@
             <xpath expr="//field[@name='categ_id']" position="after">
                 <field name="is_animal"/>
                 <field name="gender" invisible="not is_animal"/>
+                <field name="is_eggs"/>
             </xpath>
         </field>
     </record>

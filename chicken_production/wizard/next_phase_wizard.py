@@ -34,9 +34,18 @@ class ChickProductionNextPhaseWizard(models.TransientModel):
                 'project_id': self.production_id.project_id.id,
                 'female_quantity': female_quantity,
             })
+            data = []
+            for line in self.line_ids:
+                data.append([0, 0, {
+                    'product_id': line.product_id.id,
+                    'quantity': line.quantity,
+                    'uom_id': line.uom_id.id,
+                    'lot_id': line.lot_id.id,
+                   # 'unit_cost': line.unit_cost,
+                    'type': 'raw',
+                }])
+            next_production_id.product_component_ids = data
             self.production_id.next_production_id = next_production_id.id
-
-
 
 class ChickProductionNextPhaseLine(models.TransientModel):
     _name = 'chick.production.next.phase.line'

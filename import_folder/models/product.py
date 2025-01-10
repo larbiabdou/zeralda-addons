@@ -14,5 +14,9 @@ class ProductTemplate(models.Model):
                    ('female', 'Female'), ],
         required=False, )
 
+    is_eggs = fields.Boolean(
+        string='Is eggs',
+        required=False)
+
 
 

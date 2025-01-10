@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_incubation_wizard_form" model="ir.ui.view">
+        <field name="name">incubation.wizard.form</field>
+        <field name="model">incubation.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Next Phase">
+                <header>
+                    <button name="get_eggs_declarations" string="Get declarations" type="object"/>
+                    <button name="action_validate" type="object" string="Validate"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="chick_production_id" readonly="1"/>
+                        <field name="capacity"/>
+                    </group>
+                    <group>
+                        <field name="line_ids">
+                            <tree editable="bottom">
+                                <field name="chick_production_id" readonly="1"/>
+                                <field name="product_id" readonly="1"/>
+                                <field name="quantity_remaining" readonly="1"/>
+                                <field name="uom_id" readonly="1"/>
+                                <field name="lot_id" readonly="1"/>
+                                <field name="quantity_to_use" sum="Total"/>
+                                <field name="unit_cost"/>
+                            </tree>
+                        </field>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

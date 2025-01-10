@@ -33,11 +33,14 @@ class ChickProduction(models.Model):
     reception_date = fields.Date(string='Reception Date', store=True)
 
     # Male and Female Quantities and Costs
-    male_quantity = fields.Float(string='Male Quantity', )
+    male_quantity = fields.Float(string='Male Quantity', compute="compute_male_quantities", store=True)
     male_unitary_cost = fields.Float(string='Male Unitary Cost', compute="compute_unitary_male_cost", store=True)
-    female_quantity = fields.Float(string='female Quantity', )
+    female_quantity = fields.Float(string='female Quantity', compute="compute_female_quantities", store=True)
     female_unitary_cost = fields.Float(string='female Unitary Cost', compute="compute_unitary_female_cost", store=True)
-
+    eggs_quantity = fields.Integer(
+        string='Eggs quantity',
+        compute="compute_eggs_quantity", store=True,
+        required=False)
     # Remaining Quantities
     quantity_male_remaining = fields.Float(string='Quantity Male Remaining', compute='_compute_remaining_quantities', store=True)
     quantity_female_remaining = fields.Float(string='Quantity female Remaining', compute='_compute_remaining_quantities', store=True)
@@ -57,7 +60,10 @@ class ChickProduction(models.Model):
     total_female_cost = fields.Float(string='Total female Cost', compute='compute_total_cost', store=True)
     actual_male_cost = fields.Float(string='Actual Male Cost', compute="compute_actual_male_cost")
     actual_female_cost = fields.Float(string='Actual female Cost', compute="compute_actual_female_cost")
-
+    unitary_eggs_cost = fields.Float(
+        string='Eggs unitary cost',
+        compute="compute_unitary_eggs_cost",
+        required=False)
     real_consumption_ids = fields.One2many('real.consumption', 'chick_production_id', string="Real Consumption")
     weight_record_ids = fields.One2many('weight.record', 'chick_production_id', string="Weight Records")
     product_declaration_ids = fields.One2many(
@@ -71,6 +77,12 @@ class ChickProduction(models.Model):
         inverse_name='chick_production_id',
         string='Loss',
         domain=[('type', '=', 'loss')],
+        required=False)
+    product_component_ids = fields.One2many(
+        comodel_name='produce.wizard',
+        inverse_name='chick_production_id',
+        string='Components',
+        domain=[('type', '=', 'raw')],
         required=False)
     equipment_ids = fields.One2many(
         'chick.production.equipment',
@@ -99,6 +111,20 @@ class ChickProduction(models.Model):
         ('canceled', 'Canceled')
     ], default='draft', string='State')
 
+    equipment_id = fields.Many2one(
+        'maintenance.equipment',
+        string='Équipement',
+        required=True
+    )
+    capacity = fields.Integer(
+        string='Capacity',
+        related='equipment_id.capacity',
+        required=False)
+
+    free_quantity = fields.Integer(
+        string='Free Quantity',
+        required=False)
+
     def open_previous_production(self):
         return {
             'type': 'ir.actions.act_window',
@@ -116,6 +142,24 @@ class ChickProduction(models.Model):
             'view_mode': 'form',
             'res_id': self.next_production_id.id
         }
+
+    @api.depends('product_component_ids', 'product_component_ids.quantity')
+    def compute_eggs_quantity(self):
+        for record in self:
+            record.eggs_quantity = 0
+            record.eggs_quantity = sum(line.quantity for line in record.product_component_ids.filtered(lambda l: l.product_id.is_eggs))
+
+    @api.depends('product_component_ids')
+    def compute_male_quantities(self):
+        for record in self:
+            record.male_quantity = 0
+            record.male_quantity = sum(line.quantity for line in record.product_component_ids.filtered(lambda l: l.product_id.gender == 'male'))
+
+    @api.depends('product_component_ids')
+    def compute_female_quantities(self):
+        for record in self:
+            record.female_quantity = 0
+            record.female_quantity = sum(line.quantity for line in record.product_component_ids.filtered(lambda l: l.product_id.gender == 'female'))
 
     def action_open_next_phase_wizard(self):
         if self.phase_id.next_phase_id and self.phase_id.next_phase_id.type == 'eggs_production':
@@ -139,6 +183,18 @@ class ChickProduction(models.Model):
             }
         }
 
+    def open_incubation_wizard(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Incubation wizard',
+            'res_model': 'incubation.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_chick_production_id': self.id,
+            }
+        }
+
     def action_confirm(self):
         for record in self:
             record.state = 'confirmed'
@@ -153,25 +209,36 @@ class ChickProduction(models.Model):
                 female_quantity = record.import_folder.purchase_order_ids.picking_ids.move_ids.filtered(
                     lambda l: l.product_id.gender == 'female')[0].quantity
                 female_reception_cost = female_reception_cost / female_quantity * record.quantity_female_remaining
+            elif record.phase_id.type == 'incubation':
+                eggs_reception_cost = sum(line.unit_cost * line.quantity for line in record.product_component_ids)
             else:
                 male_reception_cost = record.previous_production_id.male_unitary_cost * record.quantity_male_remaining
                 female_reception_cost = record.previous_production_id.female_unitary_cost * record.quantity_female_remaining
-            if record.quantity_male_remaining > 0:
+            if record.phase_id.type == 'incubation':
                 self.env['chick.production.cost'].create({
-                    'name': 'Male reception cost',
+                    'name': 'Eggs reception cost',
                     'chick_production_id': record.id,
                     'type': 'reception',
-                    'gender': 'male',
-                    'amount': male_reception_cost ,
+                    #'gender': 'male',
+                    'amount': eggs_reception_cost,
                 })
-            if record.quantity_female_remaining > 0:
-                self.env['chick.production.cost'].create({
-                    'name': 'Female reception cost',
-                    'chick_production_id': record.id,
-                    'type': 'reception',
-                    'gender': 'female',
-                    'amount': female_reception_cost,
-                })
+            else:
+                if record.quantity_male_remaining > 0:
+                    self.env['chick.production.cost'].create({
+                        'name': 'Male reception cost',
+                        'chick_production_id': record.id,
+                        'type': 'reception',
+                        'gender': 'male',
+                        'amount': male_reception_cost ,
+                    })
+                if record.quantity_female_remaining > 0:
+                    self.env['chick.production.cost'].create({
+                        'name': 'Female reception cost',
+                        'chick_production_id': record.id,
+                        'type': 'reception',
+                        'gender': 'female',
+                        'amount': female_reception_cost,
+                    })
 
     def action_start_progress(self):
         for record in self:
@@ -192,16 +259,7 @@ class ChickProduction(models.Model):
             record.state = 'draft'
 
     def action_loss(self):
-        domain_lot_ids = False
-        if self.phase_id.type == 'phase_1':
-            lines = self.import_folder.purchase_order_ids.picking_ids.move_line_ids if self.import_folder.purchase_order_ids and self.import_folder.purchase_order_ids.picking_ids else \
-                False
-            if lines:
-                domain_lot_ids = lines.lot_id.ids
-        else:
-            lines = self.previous_production_id.product_declaration_ids if self.previous_production_id.product_declaration_ids else False
-            if lines:
-                domain_lot_ids = lines.lot_id.ids
+        domain_lot_ids = self.product_component_ids.mapped('lot_id')
         return {
             'name': _('Produce'),
             'type': 'ir.actions.act_window',
@@ -211,22 +269,13 @@ class ChickProduction(models.Model):
             'context': {
                 'default_chick_production_id': self.id,
                 'default_type': 'loss',
-                'default_domain_lot_ids': domain_lot_ids,
-                'default_domain_consumed_product_ids': self.phase_id.consume_product_ids.ids,
+                'default_domain_lot_ids': domain_lot_ids.ids,
+                'default_domain_consumed_product_ids': self.product_component_ids.mapped('product_id').ids,
             },
         }
 
     def action_produce(self):
-        domain_lot_ids = False
-        if self.phase_id.type == 'phase_1':
-            lines = self.import_folder.purchase_order_ids.picking_ids.move_line_ids if self.import_folder.purchase_order_ids and self.import_folder.purchase_order_ids.picking_ids else \
-                False
-            if lines:
-                domain_lot_ids = lines.lot_id.ids
-        elif self.phase_id.type == 'phase_2':
-            lines = self.previous_production_id.product_declaration_ids if self.previous_production_id.product_declaration_ids else False
-            if lines:
-                domain_lot_ids = lines.lot_id.ids
+        domain_lot_ids = self.product_component_ids.mapped('lot_id')
         return {
             'name': _('Produce'),
             'type': 'ir.actions.act_window',
@@ -236,9 +285,9 @@ class ChickProduction(models.Model):
             'context': {
                 'default_chick_production_id': self.id,
                 'default_type': 'declaration',
-                'default_domain_lot_ids': domain_lot_ids,
+                'default_domain_lot_ids': domain_lot_ids.ids,
                 'default_domain_product_ids': self.phase_id.declare_product_ids.ids,
-                'default_domain_consumed_product_ids': self.phase_id.consume_product_ids.ids,
+                'default_domain_consumed_product_ids': self.product_component_ids.mapped('product_id').ids,
                 'building_id': self.building_id.id,
             },
         }
@@ -255,6 +304,11 @@ class ChickProduction(models.Model):
         for record in self:
             record.male_unitary_cost = record.total_male_cost / record.quantity_male_remaining if record.quantity_male_remaining != 0 else 0
 
+    @api.depends('total_cost', 'eggs_quantity')
+    def compute_unitary_eggs_cost(self):
+        for record in self:
+            record.unitary_eggs_cost = record.total_cost / record.eggs_quantity if record.eggs_quantity != 0 else 0
+
     @api.depends('total_female_cost', 'quantity_female_remaining')
     def compute_unitary_female_cost(self):
         for record in self:
@@ -266,14 +320,14 @@ class ChickProduction(models.Model):
             if record.start_date and record.phase_id.duration:
                 record.estimated_end_date = record.start_date + timedelta(days=record.phase_id.duration)
 
-    @api.onchange('import_folder')
-    def onchange_import_folder(self):
-        for record in self:
-            if record.import_folder:
-                record.male_quantity = sum(line.quantity for line in record.import_folder.purchase_order_ids.picking_ids.move_ids.filtered(
-                    lambda l: l.product_id.gender == 'male'))
-                record.female_quantity = sum(line.quantity for line in record.import_folder.purchase_order_ids.picking_ids.move_ids.filtered(
-                    lambda l: l.product_id.gender == 'female'))
+    # @api.onchange('import_folder')
+    # def onchange_import_folder(self):
+    #     for record in self:
+    #         if record.import_folder:
+    #             record.male_quantity = sum(line.quantity for line in record.import_folder.purchase_order_ids.picking_ids.move_ids.filtered(
+    #                 lambda l: l.product_id.gender == 'male'))
+    #             record.female_quantity = sum(line.quantity for line in record.import_folder.purchase_order_ids.picking_ids.move_ids.filtered(
+    #                 lambda l: l.product_id.gender == 'female'))
 
     @api.depends('male_quantity', 'female_quantity', 'product_loss_ids')
     def _compute_remaining_quantities(self):
