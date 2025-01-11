@@ -129,7 +129,7 @@ class ProduceWizard(models.TransientModel):
         location_production = self.env['stock.location'].search([('usage', '=', 'production')])
 
         for record in self:
-            total_quantity = sum(line.quentity for line in record.wizard_id.line_ids)
+            total_quantity = sum(line.quantity for line in record.wizard_id.line_ids)
             if record.wizard_id.type != 'loss':
                 if record.lot_name:
                     record.lot_id = self.env['stock.lot'].create({
