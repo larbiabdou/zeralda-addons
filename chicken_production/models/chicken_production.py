@@ -67,19 +67,19 @@ class ChickProduction(models.Model):
     real_consumption_ids = fields.One2many('real.consumption', 'chick_production_id', string="Real Consumption")
     weight_record_ids = fields.One2many('weight.record', 'chick_production_id', string="Weight Records")
     product_declaration_ids = fields.One2many(
-        comodel_name='produce.wizard',
+        comodel_name='product.declaration',
         inverse_name='chick_production_id',
         string='Declarations',
         domain=[('type', '=', 'declaration')],
         required=False)
     product_loss_ids = fields.One2many(
-        comodel_name='produce.wizard',
+        comodel_name='product.declaration',
         inverse_name='chick_production_id',
         string='Loss',
         domain=[('type', '=', 'loss')],
         required=False)
     product_component_ids = fields.One2many(
-        comodel_name='produce.wizard',
+        comodel_name='product.declaration',
         inverse_name='chick_production_id',
         string='Components',
         domain=[('type', '=', 'raw')],

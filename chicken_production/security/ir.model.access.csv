@@ -6,6 +6,9 @@ access_chick_production_user,access.chick.production.user,model_chick_production
 access_real_consumption_user,access.real.consumption.user,model_real_consumption,base.group_user,1,1,1,1
 access_weight_record_user,access.weight.record.user,model_weight_record,base.group_user,1,1,1,1
 access_product_wizard_user,access.product.wizard.user,model_produce_wizard,base.group_user,1,1,1,1
+access_product_declaration_user,access.product.declaration.user,model_product_declaration,base.group_user,1,1,1,1
+access_product_wizard_line_user,access.product.line.parent.user,model_produce_wizard_line,base.group_user,1,1,1,1
+
 access_chick_production_equipment_user,access.chick.production.equipment.user,model_chick_production_equipment,base.group_user,1,1,1,1
 access_chick_production_cost_user,access.chick.production.cost.user,model_chick_production_cost,base.group_user,1,1,1,1
 access_cost_ventilation_user,access.cost_ventilation.user,model_cost_ventilation,base.group_user,1,1,1,1

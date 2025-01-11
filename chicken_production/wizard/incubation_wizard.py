@@ -23,7 +23,7 @@ class IncubationWizard(models.TransientModel):
     def get_eggs_declarations(self):
         self.line_ids = [(5, 0, 0)]
         if self.phase_type == 'incubation':
-            declarations = self.env['produce.wizard'].search([('chick_production_id.project_id', '=', self.chick_production_id.project_id.id),
+            declarations = self.env['product.declaration'].search([('chick_production_id.project_id', '=', self.chick_production_id.project_id.id),
                                                               ('phase_type', '=', 'eggs_production'), ('type', '=', 'declaration')])
             data = []
             for declaration in declarations:
@@ -92,12 +92,12 @@ class IncubationWizardLine(models.TransientModel):
         string='Quantity to use',
         required=False)
     declaration_id = fields.Many2one(
-        comodel_name='produce.wizard',
+        comodel_name='product.declaration',
         string='Declaration_id',
         required=False)
 
     unit_cost = fields.Float(
-        string=' unit_cost', 
+        string='Unit cost',
         required=False)
 
     @api.constrains('quantity_to_use', 'quantity_remaining')

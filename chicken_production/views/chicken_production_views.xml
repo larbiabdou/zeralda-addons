@@ -86,7 +86,7 @@
                             <field name="end_date" readonly="state not in ['draft', 'confirmed', 'in_progress']"/>
                             <field name="phase_id" readonly="state != 'draft'"/>
                             <field name="estimated_end_date" readonly="1"/>
-                            <field name="building_id"/>
+                            <field name="building_id" required="1"/>
                             <field name="day"/>
                             <field name="week"/>
                             <field name="state"/>
@@ -202,7 +202,7 @@
                                     <field name="gender" column_invisible="parent and parent.type == 'eggs_production'"/>
                                     <field name="lot_id" readonly="1"/>
                                     <field name="cost" readonly="1"/>
-                                    <field name="remaining_quantity" readonly="1"/>
+                                    <field name="remaining_quantity" column_invisible="1" readonly="1"/>
                                 </tree>
                             </field>
                         </page>

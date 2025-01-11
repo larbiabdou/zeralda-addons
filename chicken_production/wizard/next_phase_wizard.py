@@ -22,6 +22,27 @@ class ChickProductionNextPhaseWizard(models.TransientModel):
         string='Building',
         required=False)
 
+    def get_declarations(self):
+        self.line_ids = [(5, 0, 0)]
+        lines = self.production_id.product_declaration_ids
+        data = []
+        for line in lines:
+            data.append([0, 0, {
+                'product_id': line.product_id.id,
+                'quantity': line.quantity,
+                'uom_id': line.uom_id.id,
+                'lot_id': line.lot_id.id,
+            }])
+        self.line_ids = data
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'chick.production.next.phase.wizard',
+            'view_mode': 'form',
+            'res_id': self.id,
+            'target': 'new',
+            'context': self._context,
+        }
+
     def confirm_next_phase(self):
         male_quantity = sum(line.quantity for line in self.line_ids.filtered(lambda l: l.product_id.gender == 'male'))
         female_quantity = sum(line.quantity for line in self.line_ids.filtered(lambda l: l.product_id.gender == 'female'))
@@ -52,14 +73,13 @@ class ChickProductionNextPhaseLine(models.TransientModel):
     _description = 'Lines for Next Production Phase'
 
     wizard_id = fields.Many2one('chick.production.next.phase.wizard', string="Wizard", required=True, ondelete='cascade')
-    domain_product_ids = fields.Many2many(
-        comodel_name='product.product',
-        related="wizard_id.domain_product_ids",
-        string='Domain_product_ids')
-    domain_lot_ids = fields.Many2many(
-        comodel_name='stock.lot',
-        related="wizard_id.domain_lot_ids",
-        string='Domain_lot_ids')
+    # domain_product_ids = fields.Many2many(
+    #     comodel_name='product.product',
+    #     string='Domain_product_ids')
+    # domain_lot_ids = fields.Many2many(
+    #     comodel_name='stock.lot',
+    #     string='Domain_lot_ids')
+
     product_id = fields.Many2one('product.product', string="Product to Declare", required=True)
     quantity = fields.Float(string="Quantity", required=True)
     uom_id = fields.Many2one('uom.uom', string="Unit of Measure", required=True, domain=lambda self: [('category_id', '=', self.env.ref('uom.product_uom_categ_unit').id)])
