@@ -4,8 +4,8 @@
         <record id="seq_chicken_production" model="ir.sequence">
             <field name="name">Chicken Production</field>
             <field name="code">chick.production</field>
-            <field name="prefix">CP</field>
-            <field name="padding">5</field>
+            <field name="prefix">CP/%(y)s/</field>
+            <field name="padding">4</field>
         </record>
     </data>
 </odoo>

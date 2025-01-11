@@ -42,7 +42,7 @@
                         </group>
                         <group>
                             <field name="last_inspection_date"/>
-                            <field name="stock_location_id" domain="[('usage', '=', 'internal')]"/>
+                            <field name="stock_location_id" required="True" domain="[('usage', '=', 'internal')]"/>
                         </group>
                     </group>
                 </sheet>

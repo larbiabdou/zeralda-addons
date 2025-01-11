@@ -15,7 +15,7 @@ class ProductionPhase(models.Model):
         string='Next Phase',
         help='Select the next phase in the production process.'
     )
-    eggs_production = fields.Boolean(string='Eggs Production')
+    #eggs_production = fields.Boolean(string='Eggs Production')
 
     # Products to Consume
     consume_product_ids = fields.Many2many(
