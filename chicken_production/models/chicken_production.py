@@ -410,6 +410,11 @@ class RealConsumption(models.Model):
     product_id = fields.Many2one('product.product', string="Product", required=True)
     quantity_per_unit = fields.Float(string="Quantity per Unit", required=True)
     uom_id = fields.Many2one('uom.uom', string="Unit of Measure", required=True)
+    product_uom_id = fields.Many2one(
+        comodel_name='uom.uom',
+        string='Unit of Measure',
+        related="product_id.uom_id",
+        required=False)
     total_quantity = fields.Float(string="Total Quantity")
     lot_id = fields.Many2one('stock.lot', string="Lot")
     tracking = fields.Selection([
@@ -443,7 +448,8 @@ class RealConsumption(models.Model):
                 gender = 'female'
             else:
                 gender = record.gender
-            record.total_quantity = record.quantity_per_unit * record.chick_production_id.female_quantity if gender == 'female' else record.quantity_per_unit * record.chick_production_id.male_quantity
+            quantity = record.uom_id._compute_quantity(record.quantity_per_unit, record.product_id.uom_id)
+            record.total_quantity = quantity * record.chick_production_id.female_quantity if gender == 'female' else record.quantity_per_unit * record.chick_production_id.male_quantity
 
     @api.onchange('product_id')
     def _onchange_product(self):
@@ -468,7 +474,7 @@ class RealConsumption(models.Model):
                 if round(self.env['stock.quant']._get_available_quantity(
                         record.product_id,
                         record.chick_production_id.building_id.stock_location_id
-                ), 2) < record.total_quantity:
+                ), 2) < quantity:
                     raise ValidationError(_("Quantité non disponible !"))
 
                 if record.product_id.tracking == 'lot' and record.lot_id:
