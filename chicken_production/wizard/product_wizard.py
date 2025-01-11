@@ -203,17 +203,17 @@ class ProduceWizard(models.TransientModel):
                 if record.wizard_id.type == 'loss':
                     record.cost = sum(line.value for line in consumption_picking.move_ids.stock_valuation_layer_ids.filtered(
                         lambda l: l.product_id == record.product_to_consume_id))
-                declaration_id = self.env['product.declaration'].create({
-                    'chick_production_id': record.chick_production_id.id,
-                    'product_id': record.product_id.id if record.product_id else False,
-                    'product_to_consume_id': record.product_to_consume_id.id if record.product_to_consume_id else False,
-                    'uom_id': record.uom_id.id,
-                    'lot_id': record.lot_id.id if record.lot_id else False,
-                    'initial_lot_id': record.initial_lot_id.id if record.initial_lot_id else False,
-                    'cost': record.cost,
-                    'type': record.wizard_id.type,
-                    'gender': record.gender,
-                    'quantity': record.quantity,
-                    'date': record.wizard_id.date,
-                })
+            declaration_id = self.env['product.declaration'].create({
+                'chick_production_id': record.chick_production_id.id,
+                'product_id': record.product_id.id if record.product_id else False,
+                'product_to_consume_id': record.product_to_consume_id.id if record.product_to_consume_id else False,
+                'uom_id': record.uom_id.id,
+                'lot_id': record.lot_id.id if record.lot_id else False,
+                'initial_lot_id': record.initial_lot_id.id if record.initial_lot_id else False,
+                'cost': record.cost,
+                'type': record.wizard_id.type,
+                'gender': record.gender,
+                'quantity': record.quantity,
+                'date': record.wizard_id.date,
+            })
             #record.state = 'confirmed'
