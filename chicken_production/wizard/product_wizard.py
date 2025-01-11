@@ -127,9 +127,9 @@ class ProduceWizard(models.TransientModel):
 
     def action_validate_production(self):
         location_production = self.env['stock.location'].search([('usage', '=', 'production')])
+
         for record in self:
-            production = record.chick_production_id
-            #record.remaining_quantity = record.quantity
+            total_quantity = sum(line.quentity for line in record.wizard_id.line_ids)
             if record.wizard_id.type != 'loss':
                 if record.lot_name:
                     record.lot_id = self.env['stock.lot'].create({
@@ -140,7 +140,7 @@ class ProduceWizard(models.TransientModel):
 
             # Create stock picking for product consumption
                 if record.wizard_id.phase_type == 'incubation':
-                    unit_cost = record.chick_production_id.unitary_eggs_cost
+                    unit_cost = record.chick_production_id.total_cost / total_quantity
                 elif record.wizard_id.phase_type != 'eggs_production':
                     unit_cost = record.chick_production_id.male_unitary_cost if record.product_id.gender == 'male' else record.chick_production_id.female_unitary_cost
                 else:
