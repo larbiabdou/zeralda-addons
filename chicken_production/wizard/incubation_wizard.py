@@ -100,6 +100,12 @@ class IncubationWizardLine(models.TransientModel):
         string='Unit cost',
         required=False)
 
+    tracking = fields.Selection(
+        string='Tracking',
+        related="product_id.tracking",
+        store=True,
+        required=False, )
+
     @api.constrains('quantity_to_use', 'quantity_remaining')
     def _check_quantity(self):
         for record in self:

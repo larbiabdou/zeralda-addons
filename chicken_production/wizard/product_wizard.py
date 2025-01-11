@@ -49,6 +49,18 @@ class ProduceWizard(models.TransientModel):
     _name = 'produce.wizard.line'
     _description = 'Produce Wizard'
 
+    tracking = fields.Selection(
+        string='Tracking',
+        related="product_id.tracking",
+        store=True,
+        required=False, )
+
+    consume_tracking = fields.Selection(
+        string='Tracking',
+        related="product_to_consume_id.tracking",
+        store=True,
+        required=False, )
+
     wizard_id = fields.Many2one(
         comodel_name='produce.wizard',
         string='Wizard',
@@ -119,11 +131,12 @@ class ProduceWizard(models.TransientModel):
             production = record.chick_production_id
             #record.remaining_quantity = record.quantity
             if record.wizard_id.type != 'loss':
-                record.lot_id = self.env['stock.lot'].create({
-                    'product_id': record.product_id.id,
-                    'name': record.lot_name,
-                    'company_id': self.env.company.id,
-                })
+                if record.lot_name:
+                    record.lot_id = self.env['stock.lot'].create({
+                        'product_id': record.product_id.id,
+                        'name': record.lot_name,
+                        'company_id': self.env.company.id,
+                    })
 
             # Create stock picking for product consumption
                 if record.wizard_id.phase_type == 'incubation':

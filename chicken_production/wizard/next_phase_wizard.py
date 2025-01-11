@@ -1,4 +1,6 @@
 from odoo import models, fields, api
+from odoo.exceptions import ValidationError
+
 
 class ChickProductionNextPhaseWizard(models.TransientModel):
     _name = 'chick.production.next.phase.wizard'
@@ -30,6 +32,7 @@ class ChickProductionNextPhaseWizard(models.TransientModel):
             data.append([0, 0, {
                 'product_id': line.product_id.id,
                 'quantity': line.quantity,
+                'quantity_to_use': line.quantity,
                 'uom_id': line.uom_id.id,
                 'lot_id': line.lot_id.id,
             }])
@@ -57,14 +60,15 @@ class ChickProductionNextPhaseWizard(models.TransientModel):
             })
             data = []
             for line in self.line_ids:
-                data.append([0, 0, {
-                    'product_id': line.product_id.id,
-                    'quantity': line.quantity,
-                    'uom_id': line.uom_id.id,
-                    'lot_id': line.lot_id.id,
-                   # 'unit_cost': line.unit_cost,
-                    'type': 'raw',
-                }])
+                if line.quantity_to_use > 0:
+                    data.append([0, 0, {
+                        'product_id': line.product_id.id,
+                        'quantity': line.quantity_to_use,
+                        'uom_id': line.uom_id.id,
+                        'lot_id': line.lot_id.id,
+                       # 'unit_cost': line.unit_cost,
+                        'type': 'raw',
+                    }])
             next_production_id.product_component_ids = data
             self.production_id.next_production_id = next_production_id.id
 
@@ -82,5 +86,20 @@ class ChickProductionNextPhaseLine(models.TransientModel):
 
     product_id = fields.Many2one('product.product', string="Product to Declare", required=True)
     quantity = fields.Float(string="Quantity", required=True)
+    quantity_to_use = fields.Float(string="Quantity to use")
     uom_id = fields.Many2one('uom.uom', string="Unit of Measure", required=True, domain=lambda self: [('category_id', '=', self.env.ref('uom.product_uom_categ_unit').id)])
     lot_id = fields.Many2one('stock.lot', string="Lot")
+    tracking = fields.Selection(
+        string='Tracking',
+        related="product_id.tracking",
+        store=True,
+        required=False, )
+
+    @api.constrains('quantity_to_use', 'quantity')
+    def _check_quantity(self):
+        for record in self:
+            if record.quantity_to_use > record.quantity:
+                raise ValidationError('La quantité à utiliser ne peut pas dépasser la quantité restante!')
+
+            if record.quantity_to_use < 0:
+                raise ValidationError('La quantité à utiliser doit être positive!')

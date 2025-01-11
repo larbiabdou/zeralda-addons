@@ -24,9 +24,11 @@
                         <field name="quantity" column_invisible="parent.phase_type == 'eggs_production'"/>
                         <field name="average_weight" column_invisible="1"/>
                         <field name="weight_uom_id" column_invisible="1"/>
-                        <field name="initial_lot_id" column_invisible="parent.phase_type == 'eggs_production'" domain="[('id', 'in', domain_lot_ids), ('product_id', '=', product_to_consume_id)]" />
+                        <field name="initial_lot_id" required="consume_tracking == 'lot'" column_invisible="parent.phase_type == 'eggs_production'" domain="[('id', 'in', domain_lot_ids), ('product_id', '=', product_to_consume_id)]" />
                         <field name="domain_lot_ids" widget="many2many_tags" column_invisible="1"/>
-                        <field name="lot_name" column_invisible="parent.type == 'loss'"/>
+                        <field name="tracking" column_invisible="1"/>
+                        <field name="consume_tracking" column_invisible="1"/>
+                        <field name="lot_name" required="tracking == 'lot'" column_invisible="parent.type == 'loss'"/>
                         <field name="domain_product_ids" widget="many2many_tags" column_invisible="1"/>
                         <field name="domain_consumed_product_ids" widget="many2many_tags" column_invisible="1"/>
                         <field name="lot_id" readonly="1" column_invisible="1"/>
