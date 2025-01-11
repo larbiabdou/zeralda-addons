@@ -12,3 +12,7 @@ class MaintenanceEquipment(models.Model):
     capacity = fields.Integer(
         string='Capacity',
         required=False)
+    
+    cost_per_unit = fields.Float(
+        string='Cost per unit',
+        required=False)

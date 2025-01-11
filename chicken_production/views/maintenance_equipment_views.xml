@@ -8,6 +8,7 @@
             <xpath expr="//field[@name='cost']" position="after">
                 <field name="uom_id"/>
                 <field name="capacity"/>
+                <field name="cost_per_unit"/>
             </xpath>
         </field>
     </record>

@@ -215,12 +215,19 @@ class ChickProduction(models.Model):
                 male_reception_cost = record.previous_production_id.male_unitary_cost * record.quantity_male_remaining
                 female_reception_cost = record.previous_production_id.female_unitary_cost * record.quantity_female_remaining
             if record.phase_id.type == 'incubation':
+                equipment_cost = record.equipment_id.cost_per_unit * record.eggs_quantity
                 self.env['chick.production.cost'].create({
                     'name': 'Eggs reception cost',
                     'chick_production_id': record.id,
                     'type': 'reception',
                     #'gender': 'male',
                     'amount': eggs_reception_cost,
+                })
+                self.env['chick.production.cost'].create({
+                    'name': _('Incubator cost'),
+                    'chick_production_id': record.id,
+                    'type': 'equipment',
+                    'amount': equipment_cost,
                 })
             else:
                 if record.quantity_male_remaining > 0:
