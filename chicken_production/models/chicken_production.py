@@ -123,7 +123,12 @@ class ChickProduction(models.Model):
 
     free_quantity = fields.Integer(
         string='Free Quantity',
+        compute="compute_free_quantity",
         required=False)
+
+    def compute_free_quantity(self):
+        for record in self:
+            record.free_quantity = record.capacity - record.eggs_quantity
 
     def open_previous_production(self):
         return {
@@ -142,6 +147,12 @@ class ChickProduction(models.Model):
             'view_mode': 'form',
             'res_id': self.next_production_id.id
         }
+
+    def unlink(self):
+        for production in self:
+            if production.state != 'draft':  # Adjust 'confirmed' to match your actual confirmed state
+                raise ValidationError(_('You cannot delete a confirmed production'))
+        return super(ChickProduction, self).unlink()
 
     @api.depends('product_component_ids', 'product_component_ids.quantity')
     def compute_eggs_quantity(self):
@@ -216,19 +227,21 @@ class ChickProduction(models.Model):
                 female_reception_cost = record.previous_production_id.female_unitary_cost * record.quantity_female_remaining
             if record.phase_id.type == 'incubation':
                 equipment_cost = record.equipment_id.cost_per_unit * record.eggs_quantity
-                self.env['chick.production.cost'].create({
-                    'name': 'Eggs reception cost',
-                    'chick_production_id': record.id,
-                    'type': 'reception',
-                    #'gender': 'male',
-                    'amount': eggs_reception_cost,
-                })
-                self.env['chick.production.cost'].create({
-                    'name': _('Incubator cost'),
-                    'chick_production_id': record.id,
-                    'type': 'equipment',
-                    'amount': equipment_cost,
-                })
+                if eggs_reception_cost > 0:
+                    self.env['chick.production.cost'].create({
+                        'name': 'Eggs reception cost',
+                        'chick_production_id': record.id,
+                        'type': 'reception',
+                        #'gender': 'male',
+                        'amount': eggs_reception_cost,
+                    })
+                if equipment_cost > 0:
+                    self.env['chick.production.cost'].create({
+                        'name': _('Incubator cost'),
+                        'chick_production_id': record.id,
+                        'type': 'equipment',
+                        'amount': equipment_cost,
+                    })
             else:
                 if record.quantity_male_remaining > 0:
                     self.env['chick.production.cost'].create({
@@ -484,6 +497,12 @@ class RealConsumption(models.Model):
                             lot_id=record.lot_id,
                     ), 2) < quantity:
                         raise ValidationError(_("Quantité non disponible !"))
+
+    def unlink(self):
+        for record in self:
+            if record.is_confirmed:  # Adjust 'confirmed' to match your actual confirmed state
+                raise ValidationError(_('You cannot delete a confirmed consumption line'))
+        return super(RealConsumption, self).unlink()
 
     def action_confirm_consumption(self):
         location_production = self.env['stock.location'].search([('usage', '=', 'production')])

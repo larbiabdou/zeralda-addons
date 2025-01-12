@@ -17,7 +17,6 @@
                 <field name="duration"/>
                 <field name="target_temperature"/>
                 <field name="target_humidity"/>
-                <field name="eggs_production"/>
             </tree>
         </field>
     </record>

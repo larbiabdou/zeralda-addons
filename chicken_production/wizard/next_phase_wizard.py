@@ -28,7 +28,7 @@ class ChickProductionNextPhaseWizard(models.TransientModel):
         self.line_ids = [(5, 0, 0)]
         lines = self.production_id.product_declaration_ids
         data = []
-        for line in lines:
+        for line in lines.filtered(lambda l: l.product_id.id in self.next_phase_id.consume_product_ids.ids):
             data.append([0, 0, {
                 'product_id': line.product_id.id,
                 'quantity': line.quantity,

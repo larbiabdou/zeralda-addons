@@ -215,5 +215,6 @@ class ProduceWizard(models.TransientModel):
                 'gender': record.gender,
                 'quantity': record.quantity,
                 'date': record.wizard_id.date,
+                'unit_cost': record.unit_cost,
             })
             #record.state = 'confirmed'
