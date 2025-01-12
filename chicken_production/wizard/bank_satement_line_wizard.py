@@ -32,8 +32,8 @@ class BankStatementLineWizard(models.TransientModel):
                 male_cost = self.amount * production.quantity_male_remaining / total_quantity if total_quantity > 0 else 0
                 if male_cost > 0:
                     self.env['chick.production.cost'].create({
-                        'name': self.reason,
-                        'resource': self.reason,
+                        'name': self.budget_post_id.name,
+                        'resource': self.budget_post_id.name,
                         'chick_production_id': production.id,
                         'type': 'service',
                         'amount': male_cost,
@@ -45,8 +45,8 @@ class BankStatementLineWizard(models.TransientModel):
                 female_cost = self.amount * production.quantity_female_remaining / total_quantity if total_quantity > 0 else 0
                 if female_cost > 0:
                     self.env['chick.production.cost'].create({
-                        'name': self.reason,
-                        'resource': self.reason,
+                        'name': self.budget_post_id.name,
+                        'resource': self.budget_post_id.name,
                         'chick_production_id': production.id,
                         'type': 'service',
                         'amount': female_cost,
