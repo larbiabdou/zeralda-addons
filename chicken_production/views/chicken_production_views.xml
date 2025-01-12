@@ -114,7 +114,7 @@
                                     <field name="quantity"/>
                                     <field name="uom_id"/>
                                     <field name="lot_id"/>
-                                    <field name="unit_cost"/>
+                                    <field name="unit_cost" invisible="parent and parent.type != 'incubation'"/>
                                 </tree>
                             </field>
                         </page>
@@ -128,7 +128,7 @@
                                     <field name="total_quantity"/>
                                     <field name="product_uom_id"/>
                                     <field name="lot_id" required="tracking != 'none'"/>
-                                    <field name="cost"/>
+                                    <field name="cost" sum="Total"/>
                                     <field name="date"/>
                                     <field name="gender" required="parent and parent.type in ['phase_1', 'phase_2']" column_invisible="parent and parent.type == 'eggs_production'"/>
                                     <field name="tracking" column_invisible="1"/>
@@ -185,7 +185,7 @@
                                     <field name="name"/>
                                     <field name="resource"/>
                                     <field name="date"/>
-                                    <field name="amount"/>
+                                    <field name="amount" sum="Total"/>
                                 </tree>
                             </field>
                         </page>
@@ -201,7 +201,7 @@
                                     <field name="uom_id"/>
                                     <field name="gender" column_invisible="parent and parent.type == 'eggs_production'"/>
                                     <field name="lot_id" readonly="1"/>
-                                    <field name="cost" readonly="1"/>
+                                    <field name="cost" readonly="1" sum="Total"/>
                                     <field name="remaining_quantity" column_invisible="1" readonly="1"/>
                                 </tree>
                             </field>
@@ -214,7 +214,7 @@
                                     <field name="uom_id"/>
                                     <field name="gender"/>
                                     <field name="initial_lot_id"/>
-                                    <field name="cost" readonly="1"/>
+                                    <field name="cost" readonly="1" sum="Total"/>
                                 </tree>
                             </field>
                         </page>
