@@ -130,7 +130,7 @@ class ProduceWizard(models.TransientModel):
 
         for record in self:
             total_quantity = sum(line.quantity for line in record.wizard_id.line_ids)
-            if record.wizard_id.type != 'loss':
+            if record.wizard_id.typesppslk != 'loss':
                 if record.lot_name:
                     record.lot_id = self.env['stock.lot'].create({
                         'product_id': record.product_id.id,
@@ -179,6 +179,12 @@ class ProduceWizard(models.TransientModel):
                 record.cost = sum(line.value for line in declaration_picking.move_ids.stock_valuation_layer_ids.filtered(
                     lambda l: l.product_id == record.product_id))
             if record.wizard_id.phase_type != 'eggs_production':
+                if record.wizard_id.phase_type == 'incubation':
+                    unit_cost = record.chick_production_id.unitary_eggs_cost
+                elif record.wizard_id.phase_type != 'eggs_production':
+                    unit_cost = record.chick_production_id.male_unitary_cost if record.product_id.gender == 'male' else record.chick_production_id.female_unitary_cost
+                else:
+                    unit_cost = record.chick_production_id.total_cost / record.quantity
                 consumption_picking = self.env['stock.picking'].create({
                     'partner_id': False,
                     'picking_type_id': self.env.ref('stock.picking_type_out').id,
@@ -189,6 +195,7 @@ class ProduceWizard(models.TransientModel):
                         'product_id': record.product_to_consume_id.id,
                         'product_uom_qty': record.quantity,
                         'product_uom': record.uom_id.id,
+                        'price_unit': unit_cost,
                         'location_id': record.chick_production_id.building_id.stock_location_id.id,
                         'location_dest_id': location_production.id,
                         'quantity': record.quantity,
