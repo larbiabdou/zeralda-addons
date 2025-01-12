@@ -1,4 +1,7 @@
-from odoo import api, fields, models
+from odoo import api, fields, models, _
+from odoo.addons.base.models.ir_actions_report import available
+from odoo.exceptions import ValidationError
+
 
 class ProduceWizardParent(models.TransientModel):
     _name = 'produce.wizard'
@@ -130,6 +133,15 @@ class ProduceWizard(models.TransientModel):
 
         for record in self:
             total_quantity = sum(line.quantity for line in record.wizard_id.line_ids)
+
+            if record.wizard_id.phase_type == 'incubation':
+                remaining_quantity = record.chick_production_id.eggs_quantity
+                declared_quantity = total_quantity
+            elif record.wizard_id.phase_type in ['phase_1', 'phase_2']:
+                declared_quantity = record.quantity
+                remaining_quantity = record.chick_production_id.quantity_male_remaining if record.product_id.gender == 'male' else record.chick_production_id.quantity_female_remaining
+            if record.wizard_id.phase_type in ['phase_1', 'phase_2', 'incubation'] and remaining_quantity < declared_quantity:
+                raise ValidationError(_('You cannot declare a quantity greater than the remaining quantity'))
             if record.wizard_id.type != 'loss':
                 if record.lot_name:
                     record.lot_id = self.env['stock.lot'].create({
