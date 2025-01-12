@@ -108,7 +108,7 @@
                     </group>
                     <notebook>
                         <page string="Components">
-                            <field name="product_component_ids">
+                            <field name="product_component_ids" readonly="1">
                                 <tree editable="bottom">
                                     <field name="product_id"/>
                                     <field name="quantity"/>
@@ -128,7 +128,7 @@
                                     <field name="total_quantity"/>
                                     <field name="product_uom_id"/>
                                     <field name="lot_id" required="tracking != 'none'"/>
-                                    <field name="cost" sum="Total"/>
+                                    <field name="cost" sum="Total" readonly="1"/>
                                     <field name="date"/>
                                     <field name="gender" required="parent and parent.type in ['phase_1', 'phase_2']" column_invisible="parent and parent.type == 'eggs_production'"/>
                                     <field name="tracking" column_invisible="1"/>
@@ -148,7 +148,7 @@
                                     <field name="duration"/>
                                     <field name="uom_id"/>
                                     <field name="date"/>
-                                    <field name="cost" sum="Total"/>
+                                    <field name="cost" sum="Total" readonly="1"/>
                                     <field name="is_confirmed" column_invisible="1"/>
 
                                     <button string="Confirm"

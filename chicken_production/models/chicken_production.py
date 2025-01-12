@@ -374,9 +374,15 @@ class ChickProduction(models.Model):
 
     def _compute_day(self):
         for record in self:
-            if record.start_date:
+            if record.previous_production_id and record.previous_production_id.previous_production_id:
+                start_date = record.previous_production_id.previous_production_id.start_date
+            elif record.previous_production_id:
+                start_date = record.previous_production_id.start_date
+            else:
+                start_date = record.start_date
+            if start_date:
                 today = date.today()
-                delta = today - record.start_date
+                delta = today - start_date
                 record.day = delta.days
                 record.week = (record.day // 7) + 1
             else:
