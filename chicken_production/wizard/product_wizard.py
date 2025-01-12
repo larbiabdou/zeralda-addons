@@ -140,7 +140,10 @@ class ProduceWizard(models.TransientModel):
 
             # Create stock picking for product consumption
                 if record.wizard_id.phase_type == 'incubation':
-                    unit_cost = record.chick_production_id.total_cost / total_quantity
+                    if record.product_id.is_eggs:
+                        unit_cost = record.chick_production_id.unitary_eggs_cost
+                    else:
+                        unit_cost = record.chick_production_id.total_cost / total_quantity
                 elif record.wizard_id.phase_type != 'eggs_production':
                     unit_cost = record.chick_production_id.male_unitary_cost if record.product_id.gender == 'male' else record.chick_production_id.female_unitary_cost
                 else:
