@@ -89,7 +89,6 @@
                             <field name="building_id" required="1"/>
                             <field name="day"/>
                             <field name="week"/>
-                            <field name="state"/>
                         </group>
                         <group>
                             <field name="import_folder" readonly="state != 'draft'" invisible="type != 'phase_1'"/>

@@ -17,14 +17,15 @@
                 </group>
                 <field name="line_ids">
                     <tree editable="bottom">
-                        <field name="product_id" column_invisible="parent.type == 'loss'" domain="[('id', 'in', domain_product_ids)]" />
-                        <field name="uom_id" />
-                        <field name="product_to_consume_id" column_invisible="parent.phase_type == 'eggs_production'" domain="[('id', 'in', domain_consumed_product_ids)]" />
+                        <field name="product_id" options="{'no_open': True, 'no_create': True}" column_invisible="parent.type == 'loss'" domain="[('id', 'in', domain_product_ids)]"/>
+                        <field name="product_to_consume_id" options="{'no_open': True, 'no_create': True}" column_invisible="parent.phase_type == 'eggs_production'" domain="[('id', 'in', domain_consumed_product_ids)]"/>
+
+                        <field name="uom_id" options="{'no_open': True, 'no_create': True}"/>
                         <field name="quantity" string="Eggs quantity" column_invisible="parent.phase_type != 'eggs_production'"/>
                         <field name="quantity" column_invisible="parent.phase_type == 'eggs_production'"/>
                         <field name="average_weight" column_invisible="1"/>
                         <field name="weight_uom_id" column_invisible="1"/>
-                        <field name="initial_lot_id" required="consume_tracking == 'lot'" column_invisible="parent.phase_type == 'eggs_production'" domain="[('id', 'in', domain_lot_ids), ('product_id', '=', product_to_consume_id)]" />
+                        <field name="initial_lot_id" options="{'no_open': True, 'no_create': True}" required="consume_tracking == 'lot'" column_invisible="parent.phase_type == 'eggs_production'" domain="[('id', 'in', domain_lot_ids), ('product_id', '=', product_to_consume_id)]"/>
                         <field name="domain_lot_ids" widget="many2many_tags" column_invisible="1"/>
                         <field name="tracking" column_invisible="1"/>
                         <field name="consume_tracking" column_invisible="1"/>
