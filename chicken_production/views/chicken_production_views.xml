@@ -119,8 +119,8 @@
                                 </tree>
                             </field>
                         </page>
-                        <page string="Real Consumption">
-                            <field name="real_consumption_ids" nolabel="1" readonly="state != 'in_progress'">
+                        <page string="Real Consumption" invisible="type == 'incubation'">
+                            <field name="real_consumption_ids"  nolabel="1" readonly="state != 'in_progress'">
                                 <tree editable="bottom">
                                     <field name="product_id"/>
                                     <field name="quantity_per_unit"/>
