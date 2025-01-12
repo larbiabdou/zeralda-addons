@@ -381,18 +381,16 @@ class ChickProduction(models.Model):
             else:
                 start_date = record.start_date
             if start_date:
-                today = date.today()
-                delta = today - start_date
-                record.day = delta.days
+                if record.end_date:
+                    end_date = record.end_date
+                else:
+                    end_date = date.today()
+                delta = end_date - start_date
+                record.day = delta.days + 1
                 record.week = (record.day // 7) + 1
             else:
                 record.day = 0
                 record.week = 0
-
-
-    # def _generate_name(self):
-    #     sequence = self.env['ir.sequence'].next_by_code('chick.production') or 'CP/0000'
-    #     return sequence
 
     @api.model
     def create(self, vals):
