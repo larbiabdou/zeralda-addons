@@ -209,6 +209,7 @@ class ChickProduction(models.Model):
     def action_confirm(self):
         for record in self:
             record.state = 'confirmed'
+            record.cost_ids = [(5, 0, 0)]
             if record.phase_id.type == 'phase_1':
                 male_reception_cost = sum(line.value for line in record.import_folder.purchase_order_ids.picking_ids.move_ids.stock_valuation_layer_ids.filtered(
                     lambda l: l.product_id.gender == 'male'))
