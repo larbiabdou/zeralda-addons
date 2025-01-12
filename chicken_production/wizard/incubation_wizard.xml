@@ -21,7 +21,7 @@
                                 <field name="product_id" readonly="1"/>
                                 <field name="quantity_remaining" readonly="1"/>
                                 <field name="uom_id" readonly="1"/>
-                                <field name="lot_id" required="tracking == 'lot'" readonly="1"/>
+                                <field name="lot_id" required="tracking == 'lot'" />
                                 <field name="tracking" column_invisble="1"/>
                                 <field name="quantity_to_use" sum="Total"/>
                                 <field name="unit_cost"/>

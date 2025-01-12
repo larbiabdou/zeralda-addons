@@ -29,7 +29,7 @@
                         <field name="domain_lot_ids" widget="many2many_tags" column_invisible="1"/>
                         <field name="tracking" column_invisible="1"/>
                         <field name="consume_tracking" column_invisible="1"/>
-                        <field name="lot_name" required="tracking == 'lot'" column_invisible="parent.type == 'loss'"/>
+                        <field name="lot_name" required="tracking == 'lot'" readonly="tracking != 'lot'" column_invisible="parent.type == 'loss'"/>
                         <field name="domain_product_ids" widget="many2many_tags" column_invisible="1"/>
                         <field name="domain_consumed_product_ids" widget="many2many_tags" column_invisible="1"/>
                         <field name="lot_id" readonly="1" column_invisible="1"/>
