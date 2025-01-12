@@ -130,7 +130,7 @@ class ProduceWizard(models.TransientModel):
 
         for record in self:
             total_quantity = sum(line.quantity for line in record.wizard_id.line_ids)
-            if record.wizard_id.typesppslk != 'loss':
+            if record.wizard_id.type != 'loss':
                 if record.lot_name:
                     record.lot_id = self.env['stock.lot'].create({
                         'product_id': record.product_id.id,
