@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inherit Form View to Modify it -->
+    <record id="view_partner_property_form" model="ir.ui.view">
+        <field name="name">view_partner_property_form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="account.view_partner_property_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='property_account_position_id']" position="after">
+                <field name="rc"/>
+                <field name="ai"/>
+                <field name="nif"/>
+                <field name="nis"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
