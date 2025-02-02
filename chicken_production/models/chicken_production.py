@@ -114,7 +114,7 @@ class ChickProduction(models.Model):
     equipment_id = fields.Many2one(
         'maintenance.equipment',
         string='Équipement',
-        required=True
+        #required=True
     )
     capacity = fields.Integer(
         string='Capacity',
