@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- This Menu Item will appear in the Upper bar, That's why It needs NO parent or action -->
-    <menuitem id="chick_production_root" name="Chicken Production" sequence="0"/>
+    <menuitem id="chick_production_root" name="Chicken Production" sequence="0" groups="chicken_production.view_chicken_production"/>
     <menuitem id="menu_chick_configuration" name="Configuration" sequence="10" parent="chick_production_root"/>
     <menuitem id="submenu_chick_configuration" name="Chick Configuration" parent="menu_chick_configuration" action="action_chick_configuration" sequence="10" />
     <menuitem id="menu_chicken_building_config"

@@ -8,6 +8,7 @@
     'data': [
         'data/ir_sequence_data.xml',
         'security/ir.model.access.csv',
+        'security/chicken_security.xml',
         'views/chick_configuration_views.xml',
         'views/chicken_building_views.xml',
         'views/production_phase_views.xml',
