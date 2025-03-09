@@ -1,7 +1,7 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_import_folder_user,access.import.folder.user,model_import_folder,base.group_user,1,0,0,0
 access_landed_cost_matrix_user,access.import.landed.cost.matrix.user,model_landed_cost_matrix,base.group_user,1,1,1,1
-access_import_folder_manager,access.import.folder.manager,model_import_folder,base.group_system,1,1,1,1
+access_import_folder_manager,access.import.folder.manager,model_import_folder,import_folder.group_import_folder,1,1,1,1
 
 access_import_port_user,access.import.port.user,model_import_port,base.group_user,1,0,0,0
 access_import_port_manager,access.import.port.manager,model_import_port,base.group_system,1,1,1,1
