@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="account_payment_method_cheque_in" model="account.payment.method">
+            <field name="name">Chèque</field>
+            <field name="code">cheque</field>
+            <field name="payment_type">inbound</field>
+        </record>
+        <record id="account_payment_method_cheque_out" model="account.payment.method">
+            <field name="name">Chèque</field>
+            <field name="code">cheque</field>
+            <field name="payment_type">outbound</field>
+        </record>
+
+        <record id="account_payment_method_bank_cheque_in" model="account.payment.method">
+            <field name="name">Chèque de banque</field>
+            <field name="code">bank_cheque</field>
+            <field name="payment_type">inbound</field>
+        </record>
+        <record id="account_payment_method_bank_cheque_out" model="account.payment.method">
+            <field name="name">Chèque de banque</field>
+            <field name="code">bank_cheque</field>
+            <field name="payment_type">outbound</field>
+        </record>
+
+        <record id="account_payment_method_transfer_in" model="account.payment.method">
+            <field name="name">Virement</field>
+            <field name="code">transfer</field>
+            <field name="payment_type">inbound</field>
+        </record>
+        <record id="account_payment_method_transfer_out" model="account.payment.method">
+            <field name="name">Virement</field>
+            <field name="code">transfer</field>
+            <field name="payment_type">outbound</field>
+        </record>
+
+        <record id="account_payment_method_deposit_in" model="account.payment.method">
+            <field name="name">Versement</field>
+            <field name="code">deposit</field>
+            <field name="payment_type">inbound</field>
+        </record>
+        <record id="account_payment_method_deposit_out" model="account.payment.method">
+            <field name="name">Versement</field>
+            <field name="code">deposit</field>
+            <field name="payment_type">outbound</field>
+        </record>
+
+        <record id="account_payment_method_lc_in" model="account.payment.method">
+            <field name="name">Credit documentaire</field>
+            <field name="code">lc</field>
+            <field name="payment_type">inbound</field>
+        </record>
+        <record id="account_payment_method_lc_out" model="account.payment.method">
+            <field name="name">Credit documentaire</field>
+            <field name="code">lc</field>
+            <field name="payment_type">outbound</field>
+        </record>
+
+        <record id="account_payment_method_documentary_remittance_in" model="account.payment.method">
+            <field name="name">Remise documentaire</field>
+            <field name="code">documentary_remittance</field>
+            <field name="payment_type">inbound</field>
+        </record>
+        <record id="account_payment_method_documentary_remittance_out" model="account.payment.method">
+            <field name="name">Remise documentaire</field>
+            <field name="code">documentary_remittance</field>
+            <field name="payment_type">outbound</field>
+        </record>
+    </data>
+</odoo>
