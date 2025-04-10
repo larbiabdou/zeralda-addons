@@ -4,7 +4,7 @@
     'summary': 'Chicken production',
     'description': 'Chicken production',
     'category': 'Manufacturing',
-    'depends': ['stock', 'import_folder', 'maintenance', 'project'],
+    'depends': ['stock', 'import_folder', 'maintenance', 'project', 'accounting_cash'],
     'data': [
         'data/ir_sequence_data.xml',
         'security/ir.model.access.csv',
