@@ -26,6 +26,7 @@ class ChickProductionCost(models.Model):
         ('female', 'Female')
     ], string="Gender Animal", required=True)
     ventilation_id = fields.Many2one('cost.ventilation', string="Ventilation")
+    company_id = fields.Many2one('res.company', store=True, related="chick_production_id.company_id")
 
     @api.model
     def create(self, values):

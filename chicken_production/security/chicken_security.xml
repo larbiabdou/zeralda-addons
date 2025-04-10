@@ -3,4 +3,25 @@
     <record id="view_chicken_production" model="res.groups">
         <field name="name">View Chicken production</field>
     </record>
+
+    <record id="rule_chick_production_company" model="ir.rule">
+        <field name="name">Chick Production Multi-company Rule</field>
+        <field name="model_id" ref="model_chick_production"/>
+        <field name="domain_force">[('company_id', 'in', company_ids + [False])]</field>
+        <field name="global" eval="True"/>
+    </record>
+
+    <record id="rule_chick_production_cost_company" model="ir.rule">
+        <field name="name">Chick Production Cost Multi-company Rule</field>
+        <field name="model_id" ref="model_chick_production_cost"/>
+        <field name="domain_force">[('company_id', 'in', company_ids + [False])]</field>
+        <field name="global" eval="True"/>
+    </record>
+
+    <record id="rule_cost_ventilation_company" model="ir.rule">
+        <field name="name">Cost Ventilation Multi-company Rule</field>
+        <field name="model_id" ref="model_cost_ventilation"/>
+        <field name="domain_force">[('company_id', 'in', company_ids + [False])]</field>
+        <field name="global" eval="True"/>
+    </record>
 </odoo>

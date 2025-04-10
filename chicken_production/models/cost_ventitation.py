@@ -18,6 +18,7 @@ class CostVentilation(models.Model):
         ('validated', 'Validated'),
     ], string="State", default='draft', readonly=True)
     cost_ids = fields.One2many('chick.production.cost', 'ventilation_id', string="Costs")
+    company_id = fields.Many2one('res.company', required=True, default=lambda self: self.env.company)
 
     @api.model
     def _get_total_quantity(self, productions):

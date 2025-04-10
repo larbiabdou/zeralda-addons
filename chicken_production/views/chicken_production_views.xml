@@ -82,6 +82,7 @@
                         <group>
                             <field name="name" readonly="1"/>
                             <field name="project_id" required="1"/>
+                            <field name="company_id"/>
                             <field name="start_date" readonly="state != 'draft'"/>
                             <field name="end_date" readonly="state not in ['draft', 'confirmed', 'in_progress']"/>
                             <field name="phase_id" readonly="state != 'draft'"/>

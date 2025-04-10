@@ -16,6 +16,7 @@
                         <field name="type" readonly="state == 'validated'"/>
                         <field name="amount" readonly="state == 'validated'"/>
                         <field name="production_ids" readonly="state == 'validated'" widget="many2many_tags" domain="[('state', '=', 'in_progress')]"/>
+                        <field name="company_id"/>
                     </group>
                     <notebook>
                         <page string="Costs">

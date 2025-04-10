@@ -126,6 +126,8 @@ class ChickProduction(models.Model):
         compute="compute_free_quantity",
         required=False)
 
+    company_id = fields.Many2one('res.company', required=True, default=lambda self: self.env.company)
+
     def compute_free_quantity(self):
         for record in self:
             record.free_quantity = record.capacity - record.eggs_quantity
