@@ -13,6 +13,7 @@
         'views/purchase_order_views.xml',
         'views/account_move_views.xml',
         'views/product_views.xml',
+        'views/stock_landed_cost_views.xml',
     ],
     'installable': True,
     'auto_install': False,
