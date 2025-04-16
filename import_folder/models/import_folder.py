@@ -228,7 +228,16 @@ class ImportFolder(models.Model):
             #if landed_costs:
                 #landed_costs.button_validate()
                 #record.compute_landed_cost_matrix()
-            record.state = 'closed'
+            #record.state = 'closed'
+
+    def action_close(self):
+        for record in self:
+            record.write({'state': 'closed'})
+
+    def action_reopen(self):
+        for record in self:
+            record.write({'state': 'in_progress'})
+        return True
 
     def compute_landed_cost_matrix(self):
         for record in self:

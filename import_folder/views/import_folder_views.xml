@@ -20,7 +20,9 @@
             <form string="Import Folder">
                 <header>
                     <button name="button_create_landed_costs" class="oe_highlight" type="object" string="Create Landed Costs" invisible="not landed_costs_visible or state != 'in_progress'"/>
-                    <button name="button_confirm" class="oe_highlight" type="object" string="Confirm" invisible="state != 'draft'"/>
+                        <button name="button_confirm" class="oe_highlight" type="object" string="Confirm" invisible="state != 'draft'"/>
+                    <button name="action_close" class="oe_highlight" type="object" string="Close" invisible="state != 'in_progress'"/>
+                    <button name="action_reopen" class="oe_highlight" type="object" string="Reopen" invisible="state != 'closed'"/>
 
                     <field name="landed_costs_visible" invisible="1"/>
 
