@@ -264,7 +264,7 @@ class AccountBankStatement(models.Model):
 
     cashbox_start_id = fields.Many2one('account.bank.statement.cashbox', string="Starting Cashbox")
     cashbox_end_id = fields.Many2one('account.bank.statement.cashbox', string="Ending Cashbox")
-    previous_statement_id = fields.Many2one('account.bank.statement', help='technical field to compute starting balance correctly', compute='_get_previous_statement', store=True)
+    previous_statement_id = fields.Many2one('account.bank.statement', help='technical field to compute starting balance correctly')
 
     state = fields.Selection(string='Status', required=True, readonly=True, copy=False, tracking=True, selection=[
         ('draft', 'Draft'),
@@ -280,9 +280,35 @@ class AccountBankStatement(models.Model):
 
     @api.model
     def create(self, vals):
+        # Créer d'abord l'enregistrement avec super()
+        rec = super(AccountBankStatement, self).create(vals)
+
+        # Vérifier les permissions
         if not self.env.user.has_group('accounting_cash.group_cashier_admin'):
             raise ValidationError(_("You have not the right to create a statement"))
-        return super(AccountBankStatement, self).create(vals)
+
+        # Récupérer previous_statement_id si présent dans vals
+        if 'previous_statement_id' in vals and vals['previous_statement_id']:
+            previous_statement = self.env['account.bank.statement'].browse(vals['previous_statement_id'])
+            if previous_statement and previous_statement.balance_end_real:
+                # Mettre à jour balance_start avec le balance_end_real du relevé précédent
+                rec.write({'balance_start': previous_statement.balance_end_real})
+        # Si previous_statement_id n'est pas fourni, on essaie de le trouver
+        elif 'journal_id' in vals and 'date' in vals:
+            domain = [
+                ('date', '<', vals['date']),
+                ('journal_id', '=', vals['journal_id']),
+                ('state', '=', 'confirm')  # Chercher seulement dans les relevés validés
+            ]
+            previous_statement = self.search(domain, limit=1, order='date desc, id desc')
+            if previous_statement:
+                # Mettre à jour previous_statement_id et balance_start
+                rec.write({
+                    'previous_statement_id': previous_statement.id,
+                    'balance_start': previous_statement.balance_end_real
+                })
+
+        return rec
 
     def _compute_date_index(self):
         return True
@@ -342,44 +368,17 @@ class AccountBankStatement(models.Model):
         for record in self:
             record.state = 'open'
 
-    def unlink(self):
-        for record in self:
-            if record.state not in ['draft']:
-                raise ValidationError(_("You can not delete a posted Statement !"))
-        return super().unlink()
+    # def unlink(self):
+    #     for record in self:
+    #         if record.state not in ['draft']:
+    #             raise ValidationError(_("You can not delete a posted Statement !"))
+    #     return super().unlink()
 
     _sql_constraints = [
         ('unique_statement_per_day_per_journal',
          'UNIQUE(date, journal_id)',
          'Vous ne pouvez pas créer plusieurs relevés bancaires pour le même journal et le même jour.')
     ]
-
-    @api.depends('date', 'journal_id')
-    def _get_previous_statement(self):
-        for st in self:
-            # Search for the previous statement
-            domain = [('date', '<=', st.date), ('journal_id', '=', st.journal_id.id)]
-            # The reason why we have to perform this test is because we have two use case here:
-            # First one is in case we are creating a new record, in that case that new record does
-            # not have any id yet. However if we are updating an existing record, the domain date <= st.date
-            # will find the record itself, so we have to add a condition in the search to ignore self.id
-            #if not isinstance(st.id, models.NewId):
-            domain.extend(['|', '&', ('id', '<', st.id), ('date', '=', st.date), '&', ('id', '!=', st.id), ('date', '!=', st.date)])
-            previous_statement = self.search(domain, limit=1, order='date desc, id desc')
-            st.previous_statement_id = previous_statement.id
-
-    @api.depends('previous_statement_id', 'previous_statement_id.balance_end_real')
-    def _compute_starting_balance(self):
-        # When a bank statement is inserted out-of-order several fields needs to be recomputed.
-        # As the records to recompute are ordered by id, it may occur that the first record
-        # to recompute start a recursive recomputation of field balance_end_real
-        # To avoid this we sort the records by date
-        for statement in self.sorted(key=lambda s: s.date):
-            if statement.previous_statement_id.balance_end_real != statement.balance_start:
-                statement.balance_start = statement.previous_statement_id.balance_end_real
-            else:
-                # Need default value
-                statement.balance_start = statement.balance_start or 0.0
 
     def _compute_move_ids(self):
         for record in self:
