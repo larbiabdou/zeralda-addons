@@ -129,9 +129,14 @@ class ProduceWizard(models.TransientModel):
     #         record.remaining_quantity = record.quantity - quantity_used
 
     def action_validate_production(self):
-        location_production = self.env['stock.location'].search([('usage', '=', 'production')])
 
         for record in self:
+            type_operation = self.env['stock.picking.type'].search(
+                [('code', '=', 'outgoing'), ('company_id', '=', record.chick_production_id.company_id.id)])
+
+            location_production = self.env['stock.location'].search(
+                [('usage', '=', 'production'), ('company_id', '=', record.chick_production_id.company_id.id)])
+
             total_quantity = sum(line.quantity for line in record.wizard_id.line_ids)
 
             if record.wizard_id.phase_type == 'incubation':
@@ -163,8 +168,8 @@ class ProduceWizard(models.TransientModel):
                 record.unit_cost = unit_cost
                 declaration_picking = self.env['stock.picking'].create({
                     'partner_id': False,
-                    'picking_type_id': self.env.ref('stock.picking_type_out').id,
-                    'location_id': location_production.id,
+                    'picking_type_id': type_operation[0].id,
+                    'location_id': location_production[0].id,
                     'location_dest_id': record.chick_production_id.building_id.stock_location_id.id,
                 })
                 move_id = self.env['stock.move'].create({
@@ -174,14 +179,14 @@ class ProduceWizard(models.TransientModel):
                     'product_uom_qty': record.quantity,
                     'product_uom': record.uom_id.id,
                     'price_unit': unit_cost,
-                    'location_id': location_production.id,
+                    'location_id': location_production[0].id,
                     'location_dest_id': record.chick_production_id.building_id.stock_location_id.id,
                     'quantity': record.quantity,
                     'move_line_ids': [(0, 0, {
                         'product_id': record.product_id.id,
                         'product_uom_id': record.uom_id.id,
                         'quantity': record.quantity,
-                        'location_id': location_production.id,
+                        'location_id': location_production[0].id,
                         'location_dest_id': record.chick_production_id.building_id.stock_location_id.id,
                         'lot_id': record.lot_id.id if record.lot_id else False,
                     })]
@@ -199,9 +204,9 @@ class ProduceWizard(models.TransientModel):
                     unit_cost = record.chick_production_id.total_cost / record.quantity
                 consumption_picking = self.env['stock.picking'].create({
                     'partner_id': False,
-                    'picking_type_id': self.env.ref('stock.picking_type_out').id,
+                    'picking_type_id': type_operation[0].id,
                     'location_id': record.chick_production_id.building_id.stock_location_id.id,
-                    'location_dest_id': location_production.id,
+                    'location_dest_id': location_production[0].id,
                     'move_ids': [(0, 0, {
                         'name': record.product_to_consume_id.name,
                         'product_id': record.product_to_consume_id.id,
@@ -209,14 +214,14 @@ class ProduceWizard(models.TransientModel):
                         'product_uom': record.uom_id.id,
                         'price_unit': unit_cost,
                         'location_id': record.chick_production_id.building_id.stock_location_id.id,
-                        'location_dest_id': location_production.id,
+                        'location_dest_id': location_production[0].id,
                         'quantity': record.quantity,
                         'move_line_ids': [(0, 0, {
                             'product_id': record.product_to_consume_id.id,
                             'product_uom_id': record.uom_id.id,
                             'quantity': record.quantity,
                             'location_id': record.chick_production_id.building_id.stock_location_id.id,
-                            'location_dest_id': location_production.id,
+                            'location_dest_id': location_production[0].id,
                             'lot_id': record.initial_lot_id.id if record.initial_lot_id else False,
                         })]
                     })],
