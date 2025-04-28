@@ -14,3 +14,7 @@ class ChickenBuilding(models.Model):
         required=False,
         help="Physical stock location associated with this building."
     )
+    company_id = fields.Many2one(
+        comodel_name='res.company',
+        string='Company',
+        required=False)

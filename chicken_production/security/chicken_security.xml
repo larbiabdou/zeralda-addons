@@ -11,6 +11,13 @@
         <field name="global" eval="True"/>
     </record>
 
+    <record id="rule_building_company" model="ir.rule">
+        <field name="name">Building Multi-company Rule</field>
+        <field name="model_id" ref="model_chicken_building"/>
+        <field name="domain_force">[('company_id', 'in', company_ids + [False])]</field>
+        <field name="global" eval="True"/>
+    </record>
+
     <record id="rule_chick_production_cost_company" model="ir.rule">
         <field name="name">Chick Production Cost Multi-company Rule</field>
         <field name="model_id" ref="model_chick_production_cost"/>

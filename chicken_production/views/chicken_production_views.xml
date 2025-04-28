@@ -87,7 +87,7 @@
                             <field name="end_date" readonly="state not in ['draft', 'confirmed', 'in_progress']"/>
                             <field name="phase_id" readonly="state != 'draft'"/>
                             <field name="estimated_end_date" readonly="1"/>
-                            <field name="building_id" required="1"/>
+                            <field name="building_id" required="1" domain="[('company_id', '=', company_id)]"/>
                             <field name="day"/>
                             <field name="week"/>
                         </group>

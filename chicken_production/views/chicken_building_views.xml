@@ -23,6 +23,7 @@
                 <field name="building_location"/>
                 <field name="last_inspection_date"/>
                 <field name="stock_location_id"/>
+                <field name="company_id"/>
             </tree>
         </field>
     </record>
@@ -42,7 +43,10 @@
                         </group>
                         <group>
                             <field name="last_inspection_date"/>
-                            <field name="stock_location_id" required="True" domain="[('usage', '=', 'internal')]"/>
+                            <field name="company_id"/>
+                            <field name="stock_location_id" required="True"
+                                   domain="[('company_id', '=', company_id),('usage', '=', 'internal')]"/>
+
                         </group>
                     </group>
                 </sheet>
