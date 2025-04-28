@@ -512,7 +512,7 @@ class RealConsumption(models.Model):
         return super(RealConsumption, self).unlink()
 
     def action_confirm_consumption(self):
-        location_production = self.env['stock.location'].search([('usage', '=', 'production'), ('company_id', '=', self.company_id.id)])
+        location_production = self.env['stock.location'].search([('usage', '=', 'production'), ('company_id', '=', self.chick_production_id.company_id.id)])
         for record in self:
             record._verify_quantity()
             pick_output = self.env['stock.picking'].create({
