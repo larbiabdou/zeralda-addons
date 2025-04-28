@@ -512,14 +512,14 @@ class RealConsumption(models.Model):
         return super(RealConsumption, self).unlink()
 
     def action_confirm_consumption(self):
-        location_production = self.env['stock.location'].search([('usage', '=', 'production')])
+        location_production = self.env['stock.location'].search([('usage', '=', 'production'), ('company_id', '=', self.company_id.id)])
         for record in self:
             record._verify_quantity()
             pick_output = self.env['stock.picking'].create({
                 # 'name': 'Soins',
                 'picking_type_id': self.env.ref('stock.picking_type_out').id,
                 'location_id': record.chick_production_id.building_id.stock_location_id.id,
-                'location_dest_id': location_production.id,
+                'location_dest_id': location_production[0].id,
                 'origin': record.chick_production_id.name,
                 'move_ids': [(0, 0, {
                     'name': record.product_id.name,
@@ -527,14 +527,14 @@ class RealConsumption(models.Model):
                     'product_uom_qty': record.total_quantity,
                     'product_uom': record.uom_id.id,
                     'location_id': record.chick_production_id.building_id.stock_location_id.id,
-                    'location_dest_id': location_production.id,
+                    'location_dest_id': location_production[0].id,
                     'quantity': record.total_quantity,
                     'move_line_ids': [(0, 0, {
                         'product_id': record.product_id.id,
                         'product_uom_id': record.uom_id.id,
                         'quantity': record.total_quantity,
                         'location_id': record.chick_production_id.building_id.stock_location_id.id,
-                        'location_dest_id': location_production.id,
+                        'location_dest_id': location_production[0].id,
                         'lot_id': record.lot_id.id if record.lot_id else False,
                     })]
                 })],
