@@ -513,11 +513,13 @@ class RealConsumption(models.Model):
 
     def action_confirm_consumption(self):
         location_production = self.env['stock.location'].search([('usage', '=', 'production'), ('company_id', '=', self.chick_production_id.company_id.id)])
+        type_operation = self.env['stock.picking.type'].search([('code', '=', 'outgoing'), ('company_id', '=', self.chick_production_id.company_id.id)])
+
         for record in self:
             record._verify_quantity()
             pick_output = self.env['stock.picking'].create({
                 # 'name': 'Soins',
-                'picking_type_id': self.env.ref('stock.picking_type_out').id,
+                'picking_type_id': type_operation[0].id,
                 'location_id': record.chick_production_id.building_id.stock_location_id.id,
                 'location_dest_id': location_production[0].id,
                 'origin': record.chick_production_id.name,
