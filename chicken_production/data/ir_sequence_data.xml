@@ -6,6 +6,7 @@
             <field name="code">chick.production</field>
             <field name="prefix">CP/%(y)s/</field>
             <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
         </record>
     </data>
 </odoo>
