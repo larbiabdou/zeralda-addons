@@ -1,7 +1,7 @@
 from odoo import api, fields, models
 
 
-class ProductDeclaration(models.TransientModel):
+class ProductDeclaration(models.Model):
     _name = 'product.declaration'
     _description = 'Product declaration'
 
