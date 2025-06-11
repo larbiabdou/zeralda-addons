@@ -18,7 +18,7 @@
                 <field name="line_ids">
                     <tree editable="bottom">
                         <field name="product_id" options="{'no_open': True, 'no_create': True}" column_invisible="parent.type == 'loss'" domain="[('id', 'in', domain_product_ids)]"/>
-                        <field name="product_to_consume_id" options="{'no_open': True, 'no_create': True}" column_invisible="parent.phase_type == 'eggs_production'" domain="[('id', 'in', domain_consumed_product_ids)]"/>
+                        <field name="product_to_consume_id" options="{'no_open': True, 'no_create': True}" domain="[('id', 'in', domain_consumed_product_ids)]"/>
 
                         <field name="uom_id" options="{'no_open': True, 'no_create': True}"/>
                         <field name="quantity" string="Eggs quantity" column_invisible="parent.phase_type != 'eggs_production'"/>
