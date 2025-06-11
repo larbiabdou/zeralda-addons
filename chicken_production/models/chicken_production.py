@@ -215,13 +215,13 @@ class ChickProduction(models.Model):
             if record.phase_id.type == 'phase_1':
                 male_reception_cost = sum(line.value for line in record.import_folder.purchase_order_ids.picking_ids.move_ids.stock_valuation_layer_ids.filtered(
                     lambda l: l.product_id.gender == 'male'))
-                male_quantity = record.import_folder.purchase_order_ids.picking_ids.move_ids.filtered(
-                    lambda l: l.product_id.gender == 'male')[0].quantity
+                male_quantity = record.import_folder.purchase_order_ids.order_line.filtered(
+                    lambda l: l.product_id.gender == 'male')[0].qty_received
                 male_reception_cost = male_reception_cost / male_quantity * record.quantity_male_remaining
                 female_reception_cost = sum(line.value for line in record.import_folder.purchase_order_ids.picking_ids.move_ids.stock_valuation_layer_ids.filtered(
                     lambda l: l.product_id.gender == 'female'))
-                female_quantity = record.import_folder.purchase_order_ids.picking_ids.move_ids.filtered(
-                    lambda l: l.product_id.gender == 'female')[0].quantity
+                female_quantity = record.import_folder.purchase_order_ids.order_line.filtered(
+                    lambda l: l.product_id.gender == 'female')[0].qty_received
                 female_reception_cost = female_reception_cost / female_quantity * record.quantity_female_remaining
             elif record.phase_id.type == 'incubation':
                 eggs_reception_cost = sum(line.unit_cost * line.quantity for line in record.product_component_ids)
@@ -342,15 +342,6 @@ class ChickProduction(models.Model):
         for record in self:
             if record.start_date and record.phase_id.duration:
                 record.estimated_end_date = record.start_date + timedelta(days=record.phase_id.duration)
-
-    # @api.onchange('import_folder')
-    # def onchange_import_folder(self):
-    #     for record in self:
-    #         if record.import_folder:
-    #             record.male_quantity = sum(line.quantity for line in record.import_folder.purchase_order_ids.picking_ids.move_ids.filtered(
-    #                 lambda l: l.product_id.gender == 'male'))
-    #             record.female_quantity = sum(line.quantity for line in record.import_folder.purchase_order_ids.picking_ids.move_ids.filtered(
-    #                 lambda l: l.product_id.gender == 'female'))
 
     @api.depends('male_quantity', 'female_quantity', 'product_loss_ids')
     def _compute_remaining_quantities(self):
